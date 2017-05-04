@@ -57,7 +57,7 @@ django-simple-catcha used by django-cyradm requires libfreetype and libjpeg62-tu
 Installation of django-cyradm
 -----------------------------
 
-* Download django-cyradm-0.1.tar.gz from url and install it
+* Download django-cyradm-0.1.tar.gz from https://github.com/schmitzcomputer/django-cyradm/releases/download/0.1/django-cyradm-0.1.tar.gz and install it
 
 .. code-block:: console
 

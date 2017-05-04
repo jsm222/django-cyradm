@@ -309,7 +309,7 @@ and ask your questions.
 
 BUGS
 ====
-Uss the issue tracker at https://github.com/schmitzcomputer/django-cyradm
+Use the issue tracker at https://github.com/schmitzcomputer/django-cyradm
 
 
 
