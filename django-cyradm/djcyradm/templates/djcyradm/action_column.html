@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load rules %}
+<div class="btn-group"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{%trans "Actions" %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                        {% has_perm 'djcyradm.is_admin' user as is_admin %}
+                        {% has_perm 'djcyradm.is_domain_admin' user as is_domain_admin %}
+                        {% has_perm 'djcyradm.is_account_user' user as is_account_user %}
+                            {% if is_admin or is_domain_admin and not is_account_user %}
+                            <li><a href="{% url 'mail-users-update' pk=record.id %}">{%trans "Edit" %} </a></li>
+                            <li><a href="{% url 'mail-users-password-reset' pk=record.id %}">{%trans "Reset password" %} </a></li>
+                            {% elif is_account_user %}
+                            <li><a href="{% url 'mail-users-password-change' pk=record.id %}">{%trans "Change password" %} </a></li>
+                            {% endif %}
+                            <li><a href="{% url 'mail-forwarding' pk=record.id %}">{%trans "Configure forwarding" %}</a></li>
+                        </ul>
+</div>

@@ -1,0 +1,6 @@
+{% extends 'djcyradm/base.html' %}
+{% load i18n %}
+{%block content %}
+{%trans "Instructions for resetting your password has been sent to your recovery email" %}</title>
+<a href="{%url 'login' %}">{% trans "log in" %}</a>
+{% endblock %}

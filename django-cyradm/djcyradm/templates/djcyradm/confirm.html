@@ -1,0 +1,31 @@
+{% extends 'djcyradm/baseform.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="container">
+ <form action="" method="post">
+     {% csrf_token %}
+
+  <h2>{{ msg }}</h2>
+  <ul class="list-group">
+
+    {% for o in objects %}
+         <li class="list-group-item"><input type="hidden" name="selection" value="{{ o.id }}">{{ o }}</li>
+    {% endfor %}
+
+
+  </ul>
+     {% buttons %}
+          <button type="submit" class="btn btn-danger">
+    {% trans "OK" %}
+        </button>
+        <a href="../../" class="btn btn-default" role="button">{% trans "Cancel" %}</a>
+
+
+     {% endbuttons %}
+ </form>
+</div>
+{% endblock %}
+

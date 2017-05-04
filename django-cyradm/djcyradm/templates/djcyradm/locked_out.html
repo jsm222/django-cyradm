@@ -1,0 +1,17 @@
+{% extends 'djcyradm/baseform.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% block content %}
+<form action="" method="post" role="form" class="form-inline">
+    {% csrf_token %}
+    <p>{% trans "You have been locked out, please enter the captcha." %}</p>
+    {{ form.captcha.errors }}
+    {{ form.captcha }}
+    {% buttons %}
+          <button type="submit" class="btn btn-primary">
+            {% trans "Unlock" %}
+        </button>
+    {% endbuttons %}
+
+</form>
+{% endblock %}

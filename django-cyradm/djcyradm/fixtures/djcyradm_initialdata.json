@@ -1,0 +1,114 @@
+[{
+    "model": "auth.group",
+    "fields": {
+        "name": "admins",
+        "permissions": [
+            [
+                "add_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "change_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "delete_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "add_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "change_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "delete_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "domainadmins",
+        "permissions": [
+            [
+                "add_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "change_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "delete_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "accountusers",
+        "permissions": [
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+}]

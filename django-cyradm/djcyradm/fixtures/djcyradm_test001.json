@@ -1,0 +1,190 @@
+[
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "admins",
+        "permissions": [
+            [
+                "add_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "change_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "delete_domains",
+                "djcyradm",
+                "domains"
+            ],
+            [
+                "add_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "change_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "delete_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "domainadmins",
+        "permissions": [
+            [
+                "add_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "change_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "delete_mailusers",
+                "djcyradm",
+                "mailusers"
+            ],
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "accountusers",
+        "permissions": [
+            [
+                "add_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "change_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ],
+            [
+                "delete_virtualdelivery",
+                "djcyradm",
+                "virtualdelivery"
+            ]
+        ]
+    }
+},
+    {
+        "model": "djcyradm.domains",
+        "pk": 1,
+        "fields": {
+            "domain_name": "example.com",
+            "max_quota_per_account": 1024000,
+            "max_accounts_per_domain": 12,
+            "max_aliases_per_account": 2,
+            "is_alias_domain": false
+        }
+    },
+    {
+    "model": "djcyradm.domains",
+    "pk": 2,
+    "fields": {
+        "domain_name": "example1.com",
+        "max_quota_per_account": 1024000,
+        "max_accounts_per_domain": 12,
+        "max_aliases_per_account": 2,
+        "is_alias_domain": false
+    }
+},
+
+{
+    "model": "djcyradm.mailusers",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-01-02T20:53:27.066Z",
+        "username": "cyrus",
+        "domain":1,
+        "max_aliases": null,
+        "password": "$6$PpY/oCg6Nd71R5O.$sbgHnSXVH00pgsGf9dpzNNwJnb7qWjRWs0En8EXG2oSQSeYLOJaVBVavCUCcITKES0FWDLEWx6vcuMEIqNo5w1",
+        "quota": null,
+        "is_main_cyrus_admin": true,
+        "groups": [
+            [
+                "admins"
+            ]
+        ],
+        "user_permissions": [],
+        "domains": []
+    }
+}, {
+    "model": "djcyradm.mailusers",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-01-02T20:53:27.066Z",
+        "username": "myuser@example.com",
+        "domain":1,
+        "max_aliases": null,
+        "password": "$6$PpY/oCg6Nd71R5O.$sbgHnSXVH00pgsGf9dpzNNwJnb7qWjRWs0En8EXG2oSQSeYLOJaVBVavCUCcITKES0FWDLEWx6vcuMEIqNo5w1",
+        "quota": null,
+        "is_main_cyrus_admin": false,
+        "groups": [
+            [
+                "accountusers"
+            ]
+        ],
+        "user_permissions": [],
+        "domains": []
+    }
+}
+]

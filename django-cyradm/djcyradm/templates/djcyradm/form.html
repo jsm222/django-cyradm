@@ -1,0 +1,22 @@
+{% extends 'djcyradm/baseform.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+
+
+{% block content %}
+
+    <form role="form" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+       {% buttons %}
+          <button type="submit" class="btn btn-primary">
+    {% trans "OK" %}
+        </button>
+        <button type="reset" class="btn btn-default">
+            {% trans "Cancel" %}
+        </button>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load render_table from django_tables2 %}
+{% load static %}
+{% load bootstrap3 %}
+{% load rules %}
+
+<html lang="en">
+<head>
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+<style>
+    body {
+    padding-top: 65px;
+    }
+    div.small-filter {
+    float: left;
+    }
+    div.small-filter div.has-success label.control-label {
+    color:black
+    }
+
+    div.small-filter input[type="number"] {
+    width:65px;
+    }
+    li.warning {
+    background-color:#ffff99;
+
+    }
+
+
+
+</style>
+{% load i18n %}
+{% block head %}
+{% endblock %}
+</head>
+
+
+<body>
+{% include 'session_security/all.html' %}
+{% with base_url="/djcyradm" %}
+{% load djcyradm_navigation %}
+
+<div class="container">
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bar1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+    </div>
+    {% get_navigation as nav %}
+
+    <div class="collapse navbar-collapse" id="bar1">
+        <ul class="nav navbar-nav">
+        {% for nav_item in nav %}
+            {% if nav_item.allowed %}
+            <li class="{{ nav_item.cls_class }}">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                {{ nav_item.text }}
+                </a>
+                <ul class="dropdown-menu">
+                {% for sub_item in nav_item.sub %}
+                    {%if sub_item.allowed %}
+                <li>
+                    <a href="{{ sub_item.href }}">
+                        {{ sub_item.text}}
+                    </a>
+                </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+  </div>
+</nav>
+
+</div>
+
+    {% endwith %}
+
+
+
+
+    {% if request.user.is_authenticated %}
+    {% if request.user.email and request.user.email_confirmed is not True and not request.user.is_main_cyrus_admin %}
+    {% url 'mail-users-recovery-email-change' pk=request.user.id as href %}
+
+<ul class="messages list-group">
+<li class="warning list-group-item">{% trans "Please confirm your recovery email using the link sent to you or"%} <a href ="{{ href }}">{% trans "set it again" %}</a></li></ul>
+    {% elif not request.user.email and request.user.email_confirmed is not True and not request.user.is_main_cyrus_admin %}
+    {% url 'mail-users-recovery-email-change' pk=request.user.id as href %}
+    <ul class="messages list-group">
+    <li class="warning list-group-item"><a href="{{ href }}" style="text-decoration:underline">
+        {%trans "Please configure your recovery email" %}</a></li></ul>
+    {% endif %}
+    {% endif %}
+{% if messages %}
+<ul class="messages list-group">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }} list-group-item"{% endif %}>
+        {{ message }}
+    </li>
+    {% endfor %}
+
+<li><a role="button" class="btn btn-default" href="{{ request.get_full_path }}">{% trans "Dismiss messages" %}</a></li>
+</ul>
+   {% endif %}
+
+
+
+{% block content %}
+{% endblock %}
+</body>
+</html>

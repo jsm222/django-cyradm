@@ -1,0 +1,23 @@
+{% extends 'djcyradm/baseform.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+
+{% block content %}
+
+<p style="font-size:20px;text-align:center;">DJCYRADM {% trans "Please sign in" %}</p>
+    <form role="form" method="post" autocomplete="off" id="login-form" action="">
+        <input type="hidden" name="next" value="{{ next }}" />
+
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">
+            {% trans "Log in" %}
+        </button>
+
+        {% endbuttons %}
+
+    </form>
+<a href="{% url 'recover-password' %}">{% trans "Forgot password?" %}</a>
+{% endblock %}
+

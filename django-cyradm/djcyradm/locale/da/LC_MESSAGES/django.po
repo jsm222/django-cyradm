@@ -1,0 +1,545 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#
+msgid ""
+msgstr ""
+
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-14 14:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: djcyradm/forms.py:22 djcyradm/forms.py:48
+#, python-format
+msgid "%(email)s is not a valid email"
+msgstr "%(email)s er ikke en gyldig emailadresse"
+
+#: djcyradm/forms.py:35
+#, python-format
+msgid "%(domain)s is not the domain of the user: %(userdomain)s"
+msgstr "%(domain)s er ikke brugerens domæne : %(userdomain)s"
+
+#: djcyradm/forms.py:38
+#, python-format
+msgid "%(domain)s is not the alias domain %(userdomain)s"
+msgstr "%(domain)s er ikke aliasdomænet %(userdomain)s"
+
+#: djcyradm/forms.py:128
+msgid "A user has the wanted alias as username"
+msgstr "En bruger har det ønskede alias som brugernavn"
+
+#: djcyradm/forms.py:132 djcyradm/forms.py:135
+msgid "Alias already exists"
+msgstr "Aliaset findes allerede"
+
+#: djcyradm/forms.py:140
+msgid "No more aliases for this destination"
+msgstr "Ikke flere aliasser tilladt for denne destination"
+
+#: djcyradm/forms.py:156
+msgid "Reset password"
+msgstr "Nulstil kodeord"
+
+#: djcyradm/forms.py:187
+msgid "No more users for this domain limit %d reached"
+msgstr "Ikke flere brugere tilladt for dette domæne grænsen på %d er nået"
+
+#: djcyradm/forms.py:191
+msgid "User already exists"
+msgstr "Brugeren findes allerede"
+
+#: djcyradm/forms.py:196
+msgid "You are not allowed to change the Admin domains"
+msgstr "Du har ikke rettigheder til at ændre admindomæner"
+
+#: djcyradm/forms.py:200 djcyradm/forms.py:203
+msgid "You cannot change your own group membership"
+msgstr ""
+
+#: djcyradm/forms.py:206
+msgid "A domain administrator must administrate his own domain"
+msgstr "En domæneadministrator skal kunne administrere sit eget domæne"
+
+#  python-format
+#: djcyradm/forms.py:209
+#, python-format
+msgid ""
+"The max number of aliases per account for domain %(domain)s  is %(limit)d"
+msgstr "Maks antal aliasser per konto for domænet %(domain)s er %(limit)d"
+
+#: djcyradm/forms.py:212
+#, python-format
+msgid "The max quota for domain %(domain)s is %(limit)d"
+msgstr "Maks kvote for domænet %(domain)s er %(limit)d"
+
+#: djcyradm/hashers.py:39
+msgid "algorithm"
+msgstr ""
+
+#: djcyradm/hashers.py:40
+msgid "salt"
+msgstr ""
+
+#: djcyradm/hashers.py:41
+msgid "hash"
+msgstr ""
+
+#: djcyradm/models.py:20
+msgid "Please enter the username"
+msgstr "Indtast brugernavnet"
+
+#: djcyradm/models.py:20
+msgid "username"
+msgstr "brugernavn"
+
+msgid "Username"
+msgstr "Brugernavn"
+
+#: djcyradm/models.py:21
+msgid "Please choose the domain of the user"
+msgstr "Vælg brugerens domæne"
+
+#: djcyradm/models.py:21
+msgid "domain"
+msgstr "Domæne"
+
+#: djcyradm/models.py:22
+msgid "The max number of aliases the user can use"
+msgstr "Maks antal aliasser brugeren kan benytte"
+
+#: djcyradm/models.py:22
+msgid "Max aliases"
+msgstr "Maks aliasser"
+
+#: djcyradm/models.py:23
+msgid "The domains the user can administrate, only applies for domainadmins"
+msgstr ""
+"Doænerne som brugeren kan administrere, gælder kun domæneadministratorer"
+
+#: djcyradm/models.py:23 djcyradm/tables.py:31
+msgid "admindomains"
+msgstr "admindomæner"
+
+msgid "Admindomains"
+msgstr "Admindomæner"
+
+msgid "Admin of domains"
+msgstr "Administrator af domæner"
+
+#: djcyradm/models.py:24
+msgid "password"
+msgstr "Nulstil kodeord"
+
+#: djcyradm/models.py:25
+msgid "quota"
+msgstr "kvote"
+
+#: djcyradm/models.py:63
+msgid "Alias"
+msgstr "Alias"
+
+#: djcyradm/models.py:63
+msgid "Please enter the wanted alias"
+msgstr "Indtast det ønskede alias"
+
+
+#: djcyradm/models.py:64
+msgid "destination"
+msgstr "destination"
+
+#: djcyradm/models.py:64
+msgid "Please select a destination for the alias"
+msgstr "Vælg en destination for aliaset"
+
+msgid "Please enter a destination for the alias"
+msgstr "Indtast destinationen for aliaset"
+
+#: djcyradm/models.py:66
+msgid "Alias domain"
+msgstr "Aliasdomæne"
+
+#: djcyradm/models.py:66
+msgid "Please choose the domain for the alias"
+msgstr "Vælg aliasdomænet"
+
+msgid "Enter domain name"
+msgstr "Indtast domænenavn"
+#: djcyradm/tables.py:29
+msgid "Aliases used"
+msgstr "Aliasser brugt"
+
+#: djcyradm/tables.py:30
+msgid "Quota"
+msgstr "Kvote"
+
+#: djcyradm/tables.py:32
+msgid "Groups"
+msgstr "Grupper"
+
+#: djcyradm/templates/djcyradm/base.html:37
+msgid "List"
+msgstr "Liste"
+
+#: djcyradm/templates/djcyradm/base.html:38
+msgid "Add"
+msgstr "Tilføj"
+
+#: djcyradm/templates/djcyradm/virtual_delivery_form.html:13
+msgid "OK"
+msgstr "OK"
+
+#: djcyradm/templates/djcyradm/virtual_delivery_form.html:16
+msgid "Cancel"
+msgstr "Annuller"
+
+#: djcyradm/views.py:222
+msgid "Accounts"
+msgstr "Konti"
+
+#: djcyradm/views.py:227
+msgid "Domains"
+msgstr "Domæner"
+
+#: djcyradm/views.py:231
+msgid "Aliases"
+msgstr "Aliasser"
+
+msgid "starts with"
+msgstr "begynder med"
+
+msgid "Clear"
+msgstr "Nulstil"
+
+msgid "Logout"
+msgstr "Logud"
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "Displaying %(display)s of %(amount)s items"
+msgstr "Viser %(display)s af %(amount)s emner"
+msgid "Max quota per account"
+msgstr "Maks kvote per konto"
+
+msgid "Max accounts per domain"
+msgstr "Maks konti per domæne"
+
+msgid "Is alias domain"
+msgstr "Er alias domæne"
+
+msgid "Max aliases per account"
+msgstr "Maks aliasser per konto"
+
+msgid "an alias domain does not contain accounts"
+msgstr "Et aliasdomæne indeholder ikke konti"
+
+msgid "You are not allowed to add aliases"
+msgstr "Du har ikke rettigheder til at tilføje (flere) aliasser"
+
+msgid "You are not allowed to add accounts"
+msgstr "Du har ikke rettigheder til at tilføje konti"
+
+msgid "unknown / no limit"
+msgstr "ukendt / ingen grænse"
+
+msgid "Enter zero for no limit"
+msgstr "Indtast nul for ingen kvotebegræsning"
+
+msgid "Your credentials are valid, but you have not been assigned any groups. Contact your administrator."
+msgstr "Dine logininformationer er korrekte, men du har ingen rettigheder. Kontakt din administrator."
+
+msgid "You cannot change accounts, or you are trying to change the main cyrus admin, if the later use %(cmd)s"
+msgstr "Du kan ikke ændre konti, eller du forsøger at ændre cyrus hovedkontoen, hvis det sidste er tilfældet, brug %(cmd)s"
+
+msgid "You are not allowed to reset this password"
+msgstr "Du har ikke rettighed til at nulstille dette kodeord"
+
+msgid "You are not allowed to change this password. (Use manage.py for main cyrus admin)"
+msgstr "Du har ikke rettigheder til at ændre dette kodeord. (Brug manage.py for cyrus hovedkontoen)"
+
+msgid "You have unsaved changes in a form of this page."
+msgstr "Du har ugemte ændringer i en formular på denne side."
+
+msgid "Deleted %(num)d alias"
+msgid_plural "Deleted %(num)d aliases"
+msgstr[0] "Slettede %(num)d alias"
+msgstr[1] "Slettede %(num)d aliasser"
+
+msgid "Deleted %(num)d account"
+msgid_plural "Deleted %(num)d accounts"
+msgstr[0] "Slettede %(num)d konto"
+msgstr[1] "Slettede %(num)d konti"
+
+
+msgid "Deleted %(num)d domain"
+msgid_plural "Deleted %(num)d domains"
+msgstr[0] "Slettede %(num)d domæne"
+msgstr[1] "Slettede %(num)d domæner"
+
+msgid "Domain with that name already exists"
+msgstr "Domænenanvet er allerede oprettet"
+
+msgid "Could not delete domain of main cyrus user %(domain)s"
+msgstr "Kunne ikke slette domænet for hovedcyrusbrugeren %(domain)s"
+
+msgid "Do you really want to delete the listed domain and all accounts an aliases belonging to them?"
+msgid_plural "Do you really want to delete the listed domains and all accounts an aliases belonging to them?"
+msgstr[0] "Vil du virkelig slette det listede  domæne og alle konti og aliasser der tilhører det?"
+msgstr[1] "Vil du virkelig slette de listede  domæner og alle konti og aliasser der tilhører dem?"
+
+msgid "Do you really want to delete the listed alias?"
+msgid_plural "Do you really want to delete the listed aliases?"
+msgstr[0] "Vil du virkelig slette det listede alias?"
+msgstr[1] "Vil du virkelig slette de listede aliasser?"
+
+msgid "Do you really want to delete the listed aliases?"
+msgstr "Vil du virkelig slette de listede aliasser?"
+
+msgid "You are not allowed to delete aliases"
+msgstr "Du har ikke rettigheder til at slette aliasser"
+
+msgid "You are not allowed to delete domains"
+msgstr "Du har ikke rettigheder til at slette domæner"
+
+
+msgid "You are not allowed to delete accounts"
+msgstr "Du har ikke rettigheder til at slette konti"
+
+msgid "Go back"
+msgstr "Gå tilbage"
+
+msgid "Do you really want to delete the listed account and all aliases belonging to them?"
+msgid_plural "Do you really want to delete the listed accounts and all aliases belonging to them?"
+msgstr[0] "Vil du virkelig slette den listede konto og alle aliasser der tilhører den?"
+msgstr[1] "Vil du virkelig slette de listede konti og alle aliasser der tilhører dem?"
+
+
+msgid "Do you really want to disable the listed account?"
+msgid_plural "Do you really want to disable the listed accounts?"
+msgstr[0] "Vil du virkelig deaktivere den listede konto?"
+msgstr[1] "Vil du virkelig deaktivere de listede konti?"
+
+
+msgid "Do you really want to enable the listed account?"
+msgid_plural "Do you really want to enable the listed accounts?"
+msgstr[0] "Vil du virkelig aktivere den listede konto?"
+msgstr[1] "Vil du virkelig aktivere de listede konti?"
+
+
+msgid "Do you really want to disable the listed alias?"
+msgid_plural "Do you really want to disable the listed aliases?"
+msgstr[0] "Vil du virkelig deaktivere det listede alias?"
+msgstr[1] "Vil du virkelig deaktivere de listede aliasser?"
+
+msgid "Do you really want to enable the listed alias?"
+msgid_plural "Do you really want to enable the listed aliases?"
+msgstr[0] "Vil du virkelig aktivere det listede alias?"
+msgstr[1] "Vil du virkelig aktivere de listede aliasser?"
+
+
+
+msgid "Enabled %(num)d account"
+msgid_plural "Enabled %(num)d accounts"
+msgstr[0] "Aktiverede %(num)d konto"
+msgstr[1] "Aktiverede %(num)d konti"
+
+msgid "Disabled %(num)d account"
+msgid_plural "Disabled %(num)d accounts"
+msgstr[0] "Deaktiverede %(num)d konto"
+msgstr[1] "Deaktiverede %(num)d konti"
+
+msgid "Enabled %(num)d alias"
+msgid_plural "Enabled %(num)d aliases"
+msgstr[0] "Aktiverede %(num)d alias"
+msgstr[1] "Aktiverede %(num)d aliasser"
+
+msgid "Disabled %(num)d alias"
+msgid_plural "Disabled %(num)d aliases"
+msgstr[0] "Deaktiverede %(num)d alias"
+msgstr[1] "Deaktiverede %(num)d aliasser"
+
+
+
+msgid "No changes made"
+msgstr "Ingen ændringer foretaget"
+
+msgid "You cannot delete the signed in account %(account)s"
+msgstr "Du kan ikke slette kontoen der er logget ind"
+
+msgid "You are not allowed to create domain"
+msgstr "Du har ikke rettigheder til at oprette domæner"
+
+msgid "You are not allowed to update domain"
+msgstr "Du har ikke rettigheder til at opdatere domæner"
+
+msgid "admins"
+msgstr "administratorer"
+
+msgid "domainadmins"
+msgstr "domnæneadministratorer"
+
+msgid "accountusers"
+msgstr "kontobrugere"
+
+msgid "Domain name"
+msgstr "Domænenavn"
+
+msgid "Domain"
+msgstr "Domæne"
+
+msgid "alias domain"
+msgstr "aliasdomæne"
+
+msgid "Max aliases (domain)"
+msgstr "Maks aliasser (domæne)"
+
+msgid "Configure forwarding"
+msgstr "Konfigurer viderestilling"
+
+msgid "Change password"
+msgstr "Skift kodeord"
+
+msgid "Log out"
+msgstr "Log ud"
+
+msgid "Add external"
+msgstr "Tilføj eksternt"
+
+msgid "Dismiss messages"
+msgstr "Afvis beskeder"
+
+msgid "%(alias)s keeps and forwards to: %(email)s"
+msgstr "%(alias)s beholder kopi og videresender til: %(email)s"
+
+msgid "Keep copy"
+msgstr "Bevar kopi"
+
+msgid "Forward from"
+msgstr "Viderestil fra"
+
+msgid "Forward to"
+msgstr "Viderestil til"
+
+msgid "You are not allowed to list domains"
+msgstr "Du har ikke rettigheder til at liste domæner"
+
+msgid "No more external aliases from this domain %(domain)s, limit %(limit)d reached"
+msgstr "Ikke flere eksterne aliasser tilladt fra dette domæne: %(domain)s Grænsen %(limit)d er nået"
+
+msgid "Max external aliases"
+msgstr "Maks antal eksterne aliasser"
+
+msgid "External aliases used"
+msgstr "Eksterne aliasser i brug"
+
+msgid "Is external alias"
+msgstr "Er eksternt alias"
+
+msgid "Is mail forward"
+msgstr "Er viderestilling"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Enable"
+msgstr "Aktiver"
+
+msgid "Disable"
+msgstr "Deaktiver"
+
+msgid "Is active"
+msgstr "Aktiveret"
+
+msgid "Your session is about to expire"
+msgstr "Du er ved at blive logget ud"
+
+msgid "Click or type to extend your session."
+msgstr "Klik for at forblive logget ind"
+
+msgid "Max %(per_page)s per page"
+msgstr "Maks %(per_page)s per side"
+
+msgid "One page"
+msgstr "En side"
+
+msgid "Alias is making a cyclic reference %(aliases)s"
+msgstr "Aliaset laver en cyklisk reference %(aliases)s"
+
+msgid "Bulk actions"
+msgstr "Massehandling"
+
+msgid "Actions"
+msgstr "Handling"
+
+msgid "Please sign in"
+msgstr "Log venligst ind"
+
+msgid "Log in"
+msgstr "Log ind"
+
+msgid "You have been locked out, please enter the captcha."
+msgstr "Du er blevet låst ude, indtast venligst tegnene på billedet"
+
+msgid "Unlock"
+msgstr "Lås op"
+
+msgid "Recovery email"
+msgstr "Gendannelsesmail"
+
+msgid "Forgot password?"
+msgstr "Glemt kodeord?"
+
+msgid "Password reset instructions"
+msgstr "Kodeordsnulstilling"
+
+msgid "Please visit the following link to reset your password %(link)s"
+msgstr "Følg venligst følgende link for at nulstille dit kodeord %(link)s"
+
+msgid "Instructions for resetting your password has been sent to your recovery email"
+msgstr "Instruktioner til nulstilling af kodeord, er blevet sendt til din gendannelsesmail"
+
+msgid "Please confirm your recovery email using the link sent to you or"
+msgstr "Bekræft venligst din gendannelsesemail ved at bruge linket der er sendt til dig eller"
+
+msgid "set it again"
+msgstr "konfigurer den igen"
+
+msgid "Please confirm your recovery email by following instructions sent to your recovery email"
+msgstr "Bekræft venligst din gendannelsesemail ved at bruge linket der er sendt til den"
+
+msgid "Your recovery email has been confirmed"
+msgstr "Din gendannelsesemail er blevet bekræftet"
+
+msgid "Change recovery email"
+msgstr "Skift gendannelsesemail"
+
+msgid "Recovery email confirmation instructions"
+msgstr "Information om bekræftelse af gendannelsesemail"
+
+msgid "Please visit the following link to confirm your recovery email %(link)s"
+msgstr "Følg følgende link for at bekræfte din gendannelsesemail %(link)s"
+
+msgid "Please choose an external email address for recovering your password"
+msgstr "Vælg venligst en ekstern emailadresse som din gendannelsesemail"
+
+msgid "You are not allowed to change this recovery email"
+msgstr "Du har ikke rettigheder til at ændre denne gendannelsesemail"
+
+msgid "Invalid CAPTCHA"
+msgstr "Tegene passer ikke med dem på billedet"
+
+msgid "Invalid token"
+msgstr "Ugyldigt link"
+
+msgid "Please configure your recovery email"
+msgstr "Konfigurer venligst din gendannelsesemail"

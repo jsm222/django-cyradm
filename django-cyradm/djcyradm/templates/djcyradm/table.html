@@ -1,0 +1,79 @@
+{% extends 'djcyradm/base.html' %}
+{% load django_tables2 %}
+{% load static %}
+{% load bootstrap3 %}
+{% load djcyradm_query_transform %}
+{% load i18n %}
+{% block content %}
+<script language="JavaScript" xmlns:float="http://www.w3.org/1999/xhtml" xmlns:float="http://www.w3.org/1999/xhtml">
+function toggle(source) {
+    checkboxes = document.getElementsByName('selection');
+    for(var i in checkboxes)
+        checkboxes[i].checked = source.checked;
+}
+sessionSecurity.confirmFormDiscard = undefined;
+</script>
+<div class="small-filter">
+<form method="GET" class="form-inline">
+
+<ul class="list-inline input" style="margin-left:10px;">
+
+    {% bootstrap_form filter.form %}
+<li><a class="btn btn-default"  role="button" href='{{ request.path }}' >{% trans "Clear" %}</a></li>
+    <li><button class="btn btn-primary" type='submit' value="Filter">{%trans "Filter" %}</button></li>
+<li>{% blocktrans with display=filter.qs.count amount=filter.queryset.count %}Displaying {{ display }} of {{ amount }} items{%endblocktrans%}</li>
+
+
+
+
+    {% if  request.GET.showall == 'false' or request.GET.showall is None %}
+<a class="btn btn-primary" role="button" href="{{ request.path }}?{% query_transform request=request showall='true' %}">{%trans "One page" %}</a></li>
+{% else %}
+
+<a class="btn btn-primary" role="button" href="{{ request.path }}?{% query_transform request=request showall=None %}">
+    {%blocktrans with per_page=25 %}Max {{ per_page }} per page{% endblocktrans %}
+</a></li>
+
+{% endif %}
+    </ul>
+</form>
+</div>
+
+<form method="POST" action="{% url 'confirm' %}">
+    {% csrf_token %}
+        <input type="hidden" name="do_action" value="{{ request.path }}">
+        <div class="drop-down" style="clear:left;" id="bar2">
+        <ul class="nav navbar-nav">
+        <li>
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="caret"></span>
+                {% trans "Bulk actions" %}
+                </button>
+                <ul class="dropdown-menu">
+
+                    {% if is_domains != True %}
+    <li><button class="btn btn-block btn-success" name="submit" type='submit' value="enable">{%trans "Enable" %}</button></li>
+    <li><button class="btn btn-block btn-warning" name="submit" type='submit' value="disable">{%trans "Disable" %}</button></li>
+    <li><button class="btn btn-block btn-danger" name="submit" type='submit' value="delete">{%trans "Delete" %}</button></li>
+    {% else %}
+                    <li><button class="btn-block btn btn-danger" name="submit" type='submit' value="delete">{%trans "Delete" %}</button></li>
+
+            {% endif %}
+
+                </ul>
+            </li>
+        </ul>
+        </div>
+<div style="clear:both"></div>
+
+{%  render_table table "django_tables2/bootstrap.html" %}
+
+
+
+
+
+</form>
+
+{% endblock %}
+
+

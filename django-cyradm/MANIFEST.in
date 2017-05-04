@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+recursive-include djcyradm/templates *
+recursive-include djcyradm/locale *.po *.mo
+recursive-include docs *
+recursive-include djcyradm/fixtures *
+recursive-include djcyradm/management *

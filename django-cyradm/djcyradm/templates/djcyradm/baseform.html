@@ -1,0 +1,38 @@
+{% extends 'djcyradm/base.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% block head %}
+<script type="text/javascript">
+    function checkvalid(e) {
+        e.setCustomValidity("");
+
+    }
+    function usetitle(e) {
+    if(e.value == undefined || e.value==="" || e.value.match(/^\s+$/) !=null) {
+        e.setCustomValidity(e.title);
+        } else {
+        e.setCustomValidity("");
+        }
+    }
+    $(document).ready(function() {
+var selects = document.getElementsByTagName("select")
+var els = document.getElementsByTagName("input"),len,i=0;
+usetitles(els);
+usetitles(selects);
+});
+function usetitles(els) {
+    len = els.length;
+     for(i=0;i<len;i++) {
+        els[i].addEventListener("invalid", function() { usetitle(this) } );
+        els[i].addEventListener("input", function() { checkvalid(this) } );
+     }
+}
+
+</script>
+{% endblock %}
+{% block content %}
+{% endblock %}
+
+
+    </body>
+</html>
