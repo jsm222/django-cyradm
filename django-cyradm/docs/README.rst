@@ -41,7 +41,7 @@ Note that the djcyradm django-app is quite intrusive as it requires its own AUTH
 and its own PASSWORD_HASHER, and is not using contrib.admin, so it is recommended to use a dedicated django project.
 
 
-This quick start assumes Debian GNU/Linux version 8 codenamed Jessie, but the principles can be applied to other systems
+This quick start assumes Debian GNU/Linux version 10 codenamed Buster, but the principles can be applied to other systems
 
 Installation of required software
 ---------------------------------
@@ -57,11 +57,11 @@ django-simple-catcha used by django-cyradm requires libfreetype and libjpeg62-tu
 Installation of django-cyradm
 -----------------------------
 
-* Download django-cyradm-0.1.tar.gz from https://github.com/schmitzcomputer/django-cyradm/releases/download/0.1/django-cyradm-0.1.tar.gz and install it
+* Download django-cyradm-0.1.1.tar.gz from https://github.com/schmitzcomputer/django-cyradm/releases/download/0.1/django-cyradm-0.1.1.tar.gz and install it
 
 .. code-block:: console
 
-     sudo pip3 install ./django-cyradm-0.1.tar.gz
+     sudo pip3 install ./django-cyradm-0.1.1.tar.gz
 
 Initialize a django project
 ---------------------------
@@ -78,7 +78,7 @@ In order to use translations  of language names add
 
 .. code-block:: python
 
-	from django.utils.translation import ugettext_lazy as _ 
+	from django.utils.translation import ugettext_lazy as _
 
 after
 
@@ -131,7 +131,6 @@ server add:
 
 Set the special model djcyradm.Mailusers to be the AUTH_USER_MODEL
 
- 
 .. code-block:: python
 
 	AUTH_USER_MODEL = 'djcyradm.MailUsers'
@@ -156,7 +155,6 @@ add the list of supported languages
 
 
 to use translations
-    
 add 
 
 .. code-block:: python
@@ -188,6 +186,7 @@ for example
     
     ]
 
+
 add and configure the following if you intend to sync with imap
 
 Subfolders are the default created folders for each mailbox, DOMAIN is an arbitrary
@@ -211,12 +210,10 @@ Avoid to add a @ in the Cyrus ADMINUSER as it limits administration to the domai
         }
 
 
-Using mysql and python3 requires python3-dev libmysqlclient-dev and mysqlclient
-
 .. code-block:: console
 
-     sudo apt-get install python3-dev libmysqlclient-dev
-     sudo pip3 install mysqlclient
+    sudo apt-get install python3-dev libmariadbclient-dev
+    pip3 install mysqlclient
 
 configure the database here as example using mysql
 
@@ -258,7 +255,7 @@ set the following custom hasher in PASSWORD_HASHERS, make sure it is the only on
 
 Configure session_security the values are suggestions and are in seconds
 see session_security docs for more info
-add 
+add
 
 
 .. code-block:: python
@@ -268,7 +265,7 @@ add
 	SESSION_SECURITY_EXPIRE_AFTER=330
 
 Configure the axes lockout url to use a simple captcha to unlock locked 
-accounts add 
+accounts add
 
 .. code-block:: python
 
@@ -276,25 +273,51 @@ accounts add
 
 
 enable the authorization backend rules, which controls access rights:
-Note that the order of AUTHENTICATION_BACKENDS is significant
+Note that the order of AUTHENTICATION_BACKENDS is significant, also add
+
+.. code-block:: python
+
+    'axes.backends.AxesBackend'
+
+as the first entry.
 
 
 .. code-block:: python
 
     AUTHENTICATION_BACKENDS = (
-  	'rules.permissions.ObjectPermissionBackend',
-  	'django.contrib.auth.backends.ModelBackend',
+        'axes.backends.AxesBackend',
+        'rules.permissions.ObjectPermissionBackend',
+        'django.contrib.auth.backends.ModelBackend',
     )
+
+add
+
+.. code-block:: python
+
+    'axes.middleware.AxesMiddleware'
+
+to
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        ...
+    ]
+
 
 edit cyradm/urls.py and change it to the folllowing
 
 .. code-block:: python
 
-    from django.conf.urls import url, include
+    from django.urls import path,include
+
+.. code-block:: python
 
     urlpatterns = [
-        url(r'^djcyradm/', include('djcyradm.urls')),
-    ]
+        path('djcyradm/', include('djcyradm.urls')),
+        path('session_security/', include('session_security.urls'))
+        ]
+
 
 
 Initialize the database

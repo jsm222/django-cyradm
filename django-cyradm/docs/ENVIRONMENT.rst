@@ -1,7 +1,7 @@
 Mail server environment for django-cyradm
 =========================================
 
-This documentation is for Debian 8 Jessie.
+This documentation is for Debian 10 Busters.
 This part assumes you have completed  :ref:`GETTING STARTED` and are using 
 mysql. The steps for postgresql are similar but not documented here.
 The document might be helpfull for other linux and BSD systems as well.
@@ -104,8 +104,9 @@ Installing and configuring cyrus imapd
 
 
 In order to allow cyrus to use the default test cert do:
+
 .. code-block:: console
-    
+
     sudo usermod cyrus -g ssl-cert
 
 *Note enter N to keep your modifed /etc/pam.d/imap file when asked*
@@ -216,10 +217,9 @@ _______________________________
     sudo postconf -e  'virtual_alias_domains= mysql:/etc/postfix/virtual_alias_domains.cf'    
     sudo postconf -e  'virtual_alias_maps = mysql:/etc/postfix/virtual_alias_maps.cf'
     
-
 Create the following files:
 
-/etc/postfix/virtual_mailbox_domains.cf 
+/etc/postfix/virtual_mailbox_domains.cf
 
 .. code-block:: ini
 
@@ -239,7 +239,8 @@ Create the following files:
     password = secret
     query = select domain_name from djcyradm_domains where domain_name = '%s' and is_alias_domain=1;    
 
-:
+/etc/postfix/virtual_alias_maps.cf:
+
 .. code-block:: ini
 
     hosts = localhost
