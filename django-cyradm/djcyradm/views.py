@@ -1,5 +1,5 @@
-from axes.decorators import get_ip
 from axes.utils import reset
+from ipware import get_client_ip
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from djcyradm import overrides
 from django.contrib import messages
-from django.contrib.auth.views import login, LoginView, redirect_to_login, LogoutView
+from django.contrib.auth.views import LoginView, redirect_to_login, LogoutView
 from django.contrib.messages import INFO, WARNING
 from django.db.models import Q
 from django.db.models.signals import post_delete
@@ -43,7 +43,7 @@ class LoggedInPermissionsMixin(PermissionRequiredMixin):
     raise_exception = True
 
     def handle_no_permission(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             if self.raise_exception:
                 raise PermissionDenied(self.get_permission_denied_message())
         return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
@@ -280,7 +280,7 @@ def locked_out(request):
     if request.POST:
         form = AxesCaptchaForm(request.POST)
         if form.is_valid():
-            ip = get_ip(request)
+            ip,is_routable = get_client_ip(request)
             reset(ip=ip)
             return HttpResponseRedirect(reverse_lazy('login'))
     else:

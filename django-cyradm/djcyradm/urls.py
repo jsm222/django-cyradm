@@ -1,4 +1,3 @@
-from axes.decorators import watch_login
 from django.conf.urls import include, url
 from djcyradm.views import locked_out
 
@@ -7,7 +6,7 @@ from djcyradm import views
 urlpatterns = [
     url(r'session_security/', include('session_security.urls')),
     url(r'^mail-users/$', views.MailUsersTableView.as_view(), name='mail-users'),
-    url(r'^login/?$', watch_login(views.CustomLoginView.as_view()), name='login'),
+    url(r'^login/?$', views.CustomLoginView.as_view(), name='login'),
     url(r'^locked/$', locked_out, name='locked_out'),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^logout/$', views.CustomLogout.as_view(), name="logout"),

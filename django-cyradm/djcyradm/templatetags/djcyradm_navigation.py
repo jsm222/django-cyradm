@@ -35,13 +35,13 @@ def get_navigation(context):
         {'text': context['request'].user.username + " (" + gn + ")",
          'perm': "djcyradm.is_in_djcyradm_group",
          'sub': [
-             {'text': _("Change password"), 'href': '' if not context['request'].user.is_authenticated() else reverse(
+             {'text': _("Change password"), 'href': '' if not context['request'].user.is_authenticated else reverse(
                  "mail-users-password-change", kwargs={'pk': str(context['request'].user.id)}),
                  'perm': "djcyradm.is_not_main_admin"},
-             {'text': _("Change recovery email"), 'href': '' if not context['request'].user.is_authenticated() else reverse(
+             {'text': _("Change recovery email"), 'href': '' if not context['request'].user.is_authenticated else reverse(
                  "mail-users-recovery-email-change", kwargs={'pk': str(context['request'].user.id)}),
               'perm': "djcyradm.is_not_main_admin"},
-             {'text': _("Configure forwarding"), 'href': '' if not context['request'].user.is_authenticated() else reverse
+             {'text': _("Configure forwarding"), 'href': '' if not context['request'].user.is_authenticated else reverse
               ("mail-forwarding", kwargs={'pk': str(context['request'].user.id)}),
               'perm': "djcyradm.is_account_user"},
              {'text': _('Log out'), 'href': reverse("logout"), 'perm': "djcyradm.is_in_djcyradm_group"}

@@ -86,7 +86,7 @@ AUTH_USER_MODEL = 'djcyradm.MailUsers'
                 user = MailUsers.objects.get(is_main_cyrus_admin=True)
                 user.domain = Domains.objects.filter(domain_name=settings.DJCYRADM_IMAP['CYRUS']['DOMAIN']).first()
                 user.username = settings.DJCYRADM_IMAP['CYRUS']['ADMINUSER']
-                user.groups = Group.objects.filter(name="admins").all()
+                user.groups.set(Group.objects.filter(name="admins").all())
                 user.password = make_password(pwd)
                 user.save()
                 self.stdout.write(self.style.SUCCESS(
@@ -99,7 +99,7 @@ AUTH_USER_MODEL = 'djcyradm.MailUsers'
                                 domain_name=settings.DJCYRADM_IMAP['CYRUS']['DOMAIN']).first())
 
             user.save()
-            user.groups = Group.objects.filter(name="admins").all()
+            user.groups.set(Group.objects.filter(name="admins").all())
             user.save()
             self.stdout.write(self.style.SUCCESS('Successfully created user %s with password hash %s'
                                                  % (user.username, user.password)))
