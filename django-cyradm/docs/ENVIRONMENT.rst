@@ -303,14 +303,9 @@ https://uwsgi-docs.readthedocs.io/en/latest/
 proxy_set_header X-Forwarded-Proto $scheme
 in order for urls send in recovery and confirmation emails to be correct*
 
-SUPPORT
-=======
-Subscribe at https://lists.schmitz.computer/listinfo/django-cyradm
-and ask your questions.
-
 BUGS
 ====
-Use the issue tracker at https://github.com/schmitzcomputer/django-cyradm
+Use the issue tracker at https://github.com/jsm222/django-cyradm
 
 
 
