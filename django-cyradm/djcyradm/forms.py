@@ -14,7 +14,6 @@ from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from django.utils import six
 from djcyradm.imap import Imap
 from djcyradm.imap import logout
 from djcyradm.models import MailUsers, Domains, VirtualDelivery

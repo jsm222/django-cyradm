@@ -20,7 +20,7 @@ from django.contrib.messages import INFO, WARNING
 from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.shortcuts import redirect, render_to_response, render
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.utils.translation import ngettext_lazy, ngettext, gettext
 from django.utils.translation import ugettext_lazy as _, ugettext

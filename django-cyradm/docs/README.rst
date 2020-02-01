@@ -57,11 +57,30 @@ django-simple-catcha used by django-cyradm requires libfreetype and libjpeg62-tu
 Installation of django-cyradm
 -----------------------------
 
-* Download django-cyradm-0.1.1.tar.gz from https://github.com/jsm222/django-cyradm/releases/download/0.1.1/django-cyradm-0.1.1.tar.gz and install it
+* Make a virtual environment with python3.7
 
 .. code-block:: console
 
-     sudo pip3 install ./django-cyradm-0.1.1.tar.gz
+    python3.7 -m venv django-cyradm-venv
+
+* Activate it
+
+.. code-block:: console
+
+   . django-cyradm-venv/bin/activate
+
+* Update pip and setuptools in the new environment
+
+.. code-block:: console
+
+   pip  install --upgrade pip setuptools
+
+
+* Install django-cyradm-0.1.2.tar.gz from https://github.com/jsm222/django-cyradm/releases/download/0.1.2/django-cyradm-0.1.2.tar.gz
+
+.. code-block:: console
+
+     pip install https://github.com/jsm222/django-cyradm/releases/download/0.1.2/django-cyradm-0.1.2.tar.gz
 
 Initialize a django project
 ---------------------------
@@ -69,6 +88,11 @@ Initialize a django project
 
      django-admin startproject cyradm
      cd cyradm
+
+.. note::
+
+    You can use the example-project at https://github.com/jsm222/django-cyradm
+    as a starting point or you can follow the instructions below
 
 Configuring the new project for use with django-cyradm
 ------------------------------------------------------
@@ -324,7 +348,7 @@ Initialize the database
 
 .. code-block:: console
 
-    python3 manage.py migrate 
+    python manage.py migrate
 
 *if you get a warning about strict mode, follow the link outputted in the
 warning and follow instructions*
@@ -333,13 +357,13 @@ Initalize the group and permission database data
 
 .. code-block:: console
 
-    python3 manage.py loaddata djcyradm_initialdata
+    python manage.py loaddata djcyradm_initialdata
 
 Initalize the main cyrus admin from the settings in DJCYRADM_IMAP invoke
 
 .. code-block:: console
 
-    python3 manage.py djcyradm_initialize
+    python manage.py djcyradm_initialize
 
 
 
@@ -350,7 +374,7 @@ knowing selenium and geckodriver*
 
 .. code-block:: console
 
-    python3 manage.py runserver
+    python manage.py runserver
 
 visit http://127.0.0.1:8000/djcyradm/login/
 

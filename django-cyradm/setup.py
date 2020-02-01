@@ -1,4 +1,5 @@
 import os
+import setuptools
 from setuptools import find_packages, setup
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
@@ -9,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-cyradm',
-    version='0.1',
+    version='0.1.2',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License', 
@@ -21,7 +22,7 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.10',
+        'Framework :: Django :: 3.0.2',
         'Intended Audience :: System administrators',
         'License :: OSI Approved :: BSD License',  
         'Operating System :: OS Independent',
@@ -30,7 +31,21 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7'
     ],
-    install_requires=['django_tables2', 'django-bootstrap3', 'django-session_security', 'rules', 'django-axes',
-                      'django-simple-captcha', 'django-filter', 'humanize']
+setup_requires=["wheel"],
+install_requires=[
+"wheel",
+"Django==3.0.2",
+"django-axes==5.2.2",
+"django-bootstrap3==12.0.3",
+"django-filter==2.2.0",
+"django-ipware==2.1.0",
+"django-ranged-response==0.2.0",
+"django-session-security==2.6.6",
+"django-simple-captcha==0.5.12",
+"django-tables2==2.2.1",
+"humanize==0.5.1",
+"rules==2.2"
+]
 )
