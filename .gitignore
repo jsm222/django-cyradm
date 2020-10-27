@@ -1,3 +1,11 @@
 django_cyradm.egg-info
 .idea
 dist
+geckodriver.log
+db.sqlite3
+.coverage
+.tox
+build
+.eggs
+.vscode
+__pycache__

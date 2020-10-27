@@ -160,7 +160,7 @@ class MailUsersForm(MailConcatMixin, ModelForm):
         if not self.request.user.has_perm('djcyradm.is_admin') and self.request.user.has_perm(
                 'djcyradm.is_domain_admin'):
             if new_user or self.request.user.id != self.instance.pk:
-                user.groups = Group.objects.filter(name='accountusers').all()
+                user.groups.set(Group.objects.filter(name='accountusers').all())
                 user.save()
         with logout(Imap()) as imap:
             djcyradm_imap = getattr(settings, "DJCYRADM_IMAP", imap.DEFAULTS)
@@ -425,8 +425,8 @@ class RecoverPasswordForm(Form):
 class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
         return (
-            six.text_type(user.pk) + user.password +
-            six.text_type(user.email) + six.text_type(str(user.email_confirmed))
+            str(user.pk) + user.password +
+            user.email + str(user.email_confirmed)
         )
 
 class MailUsersRecoveryEmailForm(ModelForm):

@@ -1,10 +1,12 @@
 from os.path import isfile
 from time import sleep
-import rules
 from django.contrib.auth import login
 from django.http import HttpResponseRedirect
 from django.test import Client
 from django.test.utils import override_settings
+
+import rules
+
 from django.test import tag
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
@@ -16,22 +18,22 @@ from django.test import LiveServerTestCase
 from django.test import TransactionTestCase
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver import Firefox;
 from selenium.webdriver.support.select import Select
 from djcyradm.models import MailUsers, Domains, VirtualDelivery
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 
 @override_settings(DJCYRADM_SYNCIMAP=False, LANGUAGE_CODE="en-US", LANGUAGES=[('en', 'English')])
-class MySeleniumTests(LiveServerTestCase):
+class MySeleniumTests(StaticLiveServerTestCase):
     fixtures = ["djcyradm_test001"]
 
     @classmethod
     def setUpClass(cls):
         super(MySeleniumTests, cls).setUpClass()
-        if isfile("/usr/local/bin/firefox"):
-            binary = FirefoxBinary("/usr/local/bin/firefox")
-        else:
-            binary = FirefoxBinary("/usr/bin/firefox")
-        cls.selenium = WebDriver(firefox_binary=binary)
+        options = FirefoxOptions()
+        options.add_argument("--headless")
+        cls.selenium= Firefox(options=options)
         cls.selenium.implicitly_wait(40)
 
     @classmethod
@@ -69,9 +71,9 @@ class MySeleniumTests(LiveServerTestCase):
                 "//li[contains(@class,'open')]/ul/li//a[@href='/djcyradm/aliases/']").click()
 
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_xpath("//td[@class='dest']"))
+                lambda driver: self.selenium.find_element_by_xpath("//td[5]"))
             sleep(1)
-            for x in self.selenium.find_elements_by_xpath("//td[@class='dest']"):
+            for x in self.selenium.find_elements_by_xpath("//td[5]"):
                 self.assertEquals(x.text, dest)
         except NoSuchElementException as e:
             raise e
@@ -254,7 +256,7 @@ class SimpleTest(TransactionTestCase):
     def test_login(self):
         # Issue a GET request.
 
-        self.assertTrue(self.client.login(username="myuser@example.com", password="cyrus"))
+        self.assertEquals(self.client.post('/djcyradm/login/',{"username":"myuser@example.com", "password":"cyrus"}).status_code,302)
         user = MailUsers.objects.get(is_active=True, is_main_cyrus_admin=False, username="myuser@example.com",
                                      domain=Domains.objects.get(domain_name="example.com"))
         self.assertEquals(user.domain.domain_name, "example.com")
@@ -269,7 +271,6 @@ class SimpleTest(TransactionTestCase):
         self.assertEquals(user.domain, domain)
         self.assertTrue(user.check_password("cyrus"))
         self.client.post("/djcyradm/login/", {'username': "myuser@example.com", "password": "cyrus"})
-        self.client.login(username="myuser@example.com", password="cyrus")
         resp = self.client.post("/djcyradm/aliases/add/",
                                 {"dest": user.id, "alias_domain": domain.id,
                                  "alias": "test"})
@@ -311,7 +312,8 @@ class SimpleTest(TransactionTestCase):
         self.client.post("/djcyradm/login/", {'username': "myuser@example.com", "password": "cyrus"})
         with self.settings(SYNCIMAP=False):
 
-            self.client.login(username="myuser@example.com", password="cyrus")
+            resp=self.client.post('/djcyradm/login/',{"username":"myuser@example.com", "password":"cyrus"})
+            self.assertEquals(resp.status_code,302)
             domain = Domains.objects.get(domain_name="example.com")
             resp = self.client.post("/djcyradm/mail-users/add/",
                                     {"username": "test", "domain": domain.id, "groups": "3", "quota": "102400",
