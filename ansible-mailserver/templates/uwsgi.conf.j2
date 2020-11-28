@@ -1,0 +1,16 @@
+[uwsgi]
+chdir           = /var/www/django-cyradm/cyradm
+# Django's wsgi file
+module          = cyradm.wsgi
+# the virtualenv (full path)
+home            = /var/www/django-cyradm/
+
+# process-related settings
+# master
+master          = true
+# maximum number of worker processes
+processes       = 10
+# the socket (use the full path to be safe
+socket          = /var/www/django-cyradm/cyradm/mysite.sock
+chmod-socket    = 666
+vacuum          = true

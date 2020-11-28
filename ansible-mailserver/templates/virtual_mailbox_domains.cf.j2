@@ -1,0 +1,5 @@
+hosts = 127.0.0.1
+dbname = {{dbname}}
+user = {{dbuser}}
+password = {{dbpassword}}
+query = select domain_name from djcyradm_domains where domain_name = '%s' and is_alias_domain !=1;

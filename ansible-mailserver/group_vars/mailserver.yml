@@ -1,0 +1,9 @@
+  dbname: mail
+  dbuser: mail
+  dbpassword: password
+  cyrusadmin: cyrus
+  cyruspassword: cyruspwd
+  mail_domain: example.com #one of your planned destination domains
+  nginx_server_name: django-cyradm.local
+  django_cyradm_version: '0.1.2'
+  django_debug: 'True'

@@ -1,0 +1,308 @@
+---
+- hosts: mailserver
+  tasks:
+    - name: "Install libpam-mysql"
+      apt:
+        name: libpam-mysql
+        state: present
+      become: yes
+    - name: "Modify /etc/pam-mysql.conf"
+      template:
+        src: templates/pam-mysql.conf.j2
+        dest: /etc/pam-mysql.conf
+      become: yes
+    - name: "Install mariadb"
+      apt:
+        name: "mariadb-server"
+        state: present
+      become: yes
+    
+    - name: "create dbuser {{dbuser}}"
+      shell:
+        cmd: "mysql -e \"create user IF NOT EXISTS '{{dbuser}}'@'localhost' IDENTIFIED BY '{{dbpassword}}'\";"
+      become: true
+    - name: "create database {{dbname}}"
+      shell:
+        cmd: "mysql -e \"create database IF NOT EXISTS {{dbname}}\";"
+      become: true
+    - name: "grant privileges to {{dbuser}} on db {{dbname}}"
+      shell:
+        cmd: "mysql -e \"GRANT ALL PRIVILEGES on {{dbname}}.* to '{{dbuser}}'@'localhost';\";"
+      become: true
+    - name: "install sals2-bin"
+      apt: 
+        name: sasl2-bin
+      become: true
+    - name: "Configure salsauthd default start"
+      lineinfile:
+        path: /etc/default/saslauthd
+        regexp: '^START='
+        line: START=yes
+        state: present
+      become: yes
+ 
+
+    - name: "Install cyrus-imapd"
+      apt: 
+        name: cyrus-imapd
+        state: present
+      become: yes
+    - name: "Install ssl-cert"
+      apt: 
+        name: ssl-cert
+        state: present
+      become: yes
+    - name: "Modify /etc/pam.d/imap"
+      template:
+        src: templates/pam.j2
+        dest: /etc/pam.d/imap
+      become: yes
+    
+    - name: "add imap user to ssl-cert"
+      user:
+        name: cyrus
+        append: yes
+        groups: ssl-cert
+      become: yes
+    - name: "Configure allowplaintext"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^allowplaintext:'
+        line: 'allowplaintext: no'
+        state: present
+      become: yes
+    - name: "Configure sasl_mech_list"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^sasl_mech_list:'
+        line: 'sasl_mech_list: LOGIN PLAIN'
+        state: present
+      become: yes
+    
+    - name: "Configure sasl_pwcheck_method"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^sasl_pwcheck_method:'
+        line: 'sasl_pwcheck_method: saslauthd'
+        state: present
+      become: yes
+    
+    - name: "Configure tls_cert_file"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^tls_server_cert:'
+        line: 'tls_server_cert: /etc/ssl/certs/ssl-cert-snakeoil.pem'
+        state: present
+      become: yes
+    - name: "Configure tls_key_file"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^tls_server_key:'
+        line: 'tls_server_key: /etc/ssl/private/ssl-cert-snakeoil.key'
+        state: present
+      become: yes
+    - name: "Configure admin"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^admins:'
+        line: 'admins: {{cyrusadmin}}'
+        state: present
+      become: yes
+    - name: "Configure defaultdomain"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^defaultdomain:'
+        line: 'defaultdomain: localhost'
+        state: present
+      become: yes
+    - name: "Configure virtdomain"
+      lineinfile:
+        path: /etc/imapd.conf
+        regexp: '^virtdomains:'
+        line: 'virtdomains: userid'
+        state: present
+      become: yes
+    - name: "Configure cyrus.conf disable pop3"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+(pop3.*)$'
+        backrefs: yes
+        line: '\1#\2'
+      become: yes
+    - name: "Configure cyrus.conf disable nntp"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+(nntp.*$)'
+        backrefs: yes
+        line: '\1#\2'
+      become: yes
+    - name: "Configure cyrus.conf disable http"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+(http.*$)'
+        backrefs: yes
+        line: '\1#\2'
+      become: yes
+    - name: "Configure cyrus.conf enable imap"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+#(imap\s+cmd="imapd.*$)'
+        backrefs: yes
+        line: '\1\2'
+      become: yes
+    - name: "Configure cyrus.conf enable imaps"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+#(imaps\s+cmd="imapd.*$)'
+        backrefs: yes
+        line: '\1\2'
+      become: yes
+    - name: "Restart imapd"
+      service: 
+        name: cyrus-imapd
+        state: restarted
+      become: true
+    - name: "Install postfix"
+      apt:
+        pkg:
+        - postfix
+        - postfix-mysql
+        state: present
+      become: yes
+    - name: "create /etc/postfix/sasl"
+      file:
+        path: /etc/postfix/sasl
+        state: directory
+    - name: "create /etc/postfix/sasl/smtpd.conf"
+      file:
+        path: /etc/postfix/sasl/smtpd.conf
+        state: touch
+      become: yes
+    - name: "set pwcheck method"
+      lineinfile:
+        path: /etc/postfix/sasl/smtpd.conf
+        line: "pwcheck_method: saslauthd"
+        state: present
+      become: yes
+    - name: "set mechlist"
+      lineinfile:
+        path: /etc/postfix/sasl/smtpd.conf
+        line: "mech_list: PLAIN LOGIN"
+        state: present
+      become: yes
+    - name: "Configure saslauthd"
+      lineinfile:
+        path: /etc/default/saslauthd
+        regexp: '^OPTIONS='
+        line: OPTIONS="-c -r -m /var/run/saslauthd"
+        state: present
+      become: yes
+    - name: "Copy /etc/default/saslauthd to /etc/default/saslauthd-postfix"
+      copy:
+        remote_src: yes
+        src: /etc/default/saslauthd
+        dest: /etc/default/saslauthd-postfix
+      become: yes
+    - name: "Create salsauthd dir in postfix chroot"
+      file:
+        state: directory
+        path: /var/spool/postfix/var/run/saslauthd
+        mode: '0710'
+        owner: root
+        group: sasl
+      become: yes
+    - name: "Add user postfix to group sasl"
+      user:
+        name: postfix
+        append: yes
+        groups: sasl
+      become: yes
+    - name: "Configure salsauthd socket in postfix chroot"
+      lineinfile:
+        path: /etc/default/saslauthd-postfix
+        regexp: '^OPTIONS='
+        line: OPTIONS="-c -r -m /var/spool/postfix/var/run/saslauthd"
+        state: present
+      become: yes
+    - name: "Restart saslauthd"
+      service:
+        name: saslauthd
+        state: restarted
+      become: yes
+
+    - name: "Modify /etc/pam.d/smtp"
+      template:
+        src: templates/pam.j2
+        dest: /etc/pam.d/smtp
+      become: yes
+    
+    - name: "create /var/spool/postfix/var/imap/socket"
+      file:
+        path: /var/spool/postfix/var/imap/socket
+        state: directory
+        recurse: true
+        owner: root
+        group: postfix
+      become: yes
+    - name: "Configure lmtpunix in postfix chroot"
+      lineinfile:
+        path: /etc/cyrus.conf
+        regexp: '^(\s)+lmtpunix\s+cmd="lmtpd" listen=\".*\"(.*$)'
+        backrefs: yes
+        line: '\1 lmtpunix cmd="lmtpd" listen="/var/spool/postfix/var/imap/socket/lmtp" \2'
+        state: present
+      become: yes
+    
+    - name: "Restart imapd"
+      service:
+        name: cyrus-imapd
+        state: restarted
+      become: yes
+
+    - name: "Create /etc/postfix/virtual_mailbox_domains.cf"
+      template:
+        src: templates/virtual_mailbox_domains.cf.j2
+        dest: /etc/postfix/virtual_mailbox_domains.cf
+        owner: root
+        group: postfix
+        mode: '0640'
+      become: yes
+    - name: "Create /etc/postfix/virtual_alias_domains.cf"
+      template:
+        src: templates/virtual_alias_domains.cf.j2
+        dest: /etc/postfix/virtual_alias_domains.cf
+        owner: root
+        group: postfix
+        mode: '0640'
+      become: yes
+
+    - name: "Create /etc/postfix/virtual_alias_maps.cf"
+      template:
+        src: templates/virtual_alias_maps.cf.j2
+        dest: /etc/postfix/virtual_alias_maps.cf
+        owner: root
+        group: postfix
+        mode: '0640'
+      become: yes
+    - name: "Configure postfix"
+      shell:
+        cmd: "{{item}}"
+      with_items:
+        - "postconf -e 'smtpd_tls_auth_only=yes'"
+        - "postconf -e 'smtpd_sasl_local_domain = $myhostname'"
+        - "postconf -e 'smtpd_sasl_auth_enable = yes'"
+        - "postconf -e 'broken_sasl_auth_clients = yes'"
+        - "postconf -e 'smtpd_sasl_security_options = noanonymous'"
+        - "postconf -e 'smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination'"
+        - "postconf -e 'mailbox_transport = lmtp:unix:/var/imap/socket/lmtp'"
+        - "postconf -e 'virtual_transport = $mailbox_transport'"
+        - "postconf -e  'virtual_mailbox_domains = mysql:/etc/postfix/virtual_mailbox_domains.cf'"
+        - "postconf -e  'virtual_alias_domains= mysql:/etc/postfix/virtual_alias_domains.cf'"
+        - "postconf -e  'virtual_alias_maps = mysql:/etc/postfix/virtual_alias_maps.cf'"
+      become: yes
+    - name: "Restart postfix"
+      service:
+        name: postfix
+        state: restarted
+      become: yes
+- import_playbook: django-cyradm.yml 

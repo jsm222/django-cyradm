@@ -1,0 +1,178 @@
+---
+- hosts: mailserver
+  handlers:
+    - include: handlers/main.yml
+  tasks:
+    - name: Add python3-venv
+      apt:
+        name: python3-venv
+      become: yes
+    - name: Add build-deps
+      apt:
+        pkg: 
+        - libfreetype6-dev 
+        - libjpeg62-turbo-dev 
+        - zlib1g-dev 
+        - python3-pip
+        - python3-dev 
+        - libmariadbclient-dev
+        
+      become: yes  
+    - name: Download https://github.com/jsm222/django-cyradm/releases/download/{{django_cyradm_version}}/django-cyradm-{{django_cyradm_version}}.tar.gz
+      get_url:
+        url: https://github.com/jsm222/django-cyradm/releases/download/{{django_cyradm_version}}/django-cyradm-{{django_cyradm_version}}.tar.gz
+        dest: /tmp
+        mode: '0440'
+      become: yes
+    - name: Update repositories cache and install Nginx
+      apt:
+        name: nginx
+        update_cache: yes
+      become: yes 
+    - name: Create nginx directory structure
+      file: 
+        path : /etc/nginx/conf.d/
+        state: directory
+        mode: 0755
+      become: yes 
+    - name: Setup Nginx reverse proxy for uwsgi
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-available/django-cyradm
+        owner: root
+        group: root
+        mode: 0644
+      register: nginx_needs_restart
+      become: yes 
+    - name: enable site
+      file:
+        src: "/etc/nginx/sites-available/django-cyradm"
+        dest: "/etc/nginx/sites-enabled/django-cyradm"
+        state: link
+      become: yes 
+    - name: Enabling Nginx service
+      systemd:
+        name: nginx
+        enabled: yes
+      become: yes 
+    - name: Starting Nginx service
+      systemd:
+        name: nginx
+        state: restarted
+        daemon_reload: yes
+      become: yes 
+
+    - name: Create python virtual environment
+      pip:
+        virtualenv_command: /usr/bin/python3 -m venv
+        virtualenv: "/var/www/django-cyradm"
+        name: setuptools
+      become: yes
+    - name: Install mysqlclient
+      pip:
+        virtualenv: "/var/www/django-cyradm"
+        name: mysqlclient
+      become: yes
+    - name: Install uwsgi
+      pip:
+        virtualenv: "/var/www/django-cyradm"
+        name: uwsgi
+      become: yes
+    - name: Install django-cyradm
+      pip:
+        name: /tmp/django-cyradm-{{django_cyradm_version}}.tar.gz  
+        virtualenv: "/var/www/django-cyradm"
+      become: yes
+    
+    - name: Check if project exists
+      stat:
+        path: /var/www/django-cyradm/cyradm
+      register: stat_result
+
+    - name: Django create project
+      shell: "/var/www/django-cyradm/bin/django-admin  startproject cyradm"
+      args:
+        chdir: "/var/www/django-cyradm"
+      become: yes
+      when: not stat_result.stat.exists
+    - name: Edit app settings
+      template: 
+        src: templates/django_cyradm_settings.py.j2
+        dest: /var/www/django-cyradm/cyradm/cyradm/settings.py
+      become: yes
+    
+    - name: Edit app urls settings
+      template: 
+        src: templates/django_cyradm_urls.py.j2
+        dest: /var/www/django-cyradm/cyradm/cyradm/urls.py
+      become: yes
+    - name: Django migrate
+      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py migrate"
+      args:
+        chdir: "/var/www/django-cyradm"
+  
+        
+    - name: djcyradm_initialize data
+      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py loaddata djcyradm_initialdata"
+      args:
+        chdir: "/var/www/django-cyradm"
+
+    - name: djcyradm_initialize
+      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py djcyradm_initialize --update"
+      args:
+        chdir: "/var/www/django-cyradm"
+
+    - name: collectstatic
+      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py collectstatic --noinput"
+      args:
+        chdir: "/var/www/django-cyradm"
+      become: yes
+    
+    - name: uwsgi.ini
+      template:
+        src: templates/uwsgi.conf.j2
+        dest: /etc/uwsgi.ini
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+    - name: Make systemd service file
+      template:
+        src: templates/django-cyradm.service.j2
+        dest: /etc/systemd/system/django-cyradm.service
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+      - reload systemctl
+      become: yes
+    - name: Set permissions
+      file:
+        dest: /var/www/django-cyradm/cyradm
+        owner: www-data
+        group: www-data
+        recurse: true
+      become: yes
+    - name: django-cyradm start
+      service: 
+        name: django-cyradm.service 
+        state: restarted
+        enabled: yes
+      become: yes
+    - name: Ensure a locale exists
+      locale_gen:
+        name: da_DK
+        state: present
+      become: yes
+    - name: Ensure a locale exists
+      locale_gen:
+        name: en_US
+        state: present
+      become: yes
+
+    - name: django-cyradm start
+      service: 
+        name: django-cyradm.service 
+        state: restarted
+        enabled: yes
+      become: yes

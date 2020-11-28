@@ -1,0 +1,30 @@
+# /etc/systemd/system/certadm.service
+
+[Unit]
+Description=django-cyradm uswgi
+
+# Requirements
+Requires=network.target
+
+# Dependency ordering
+After=network.target
+
+[Service]
+TimeoutStartSec=0
+RestartSec=10
+Restart=always
+
+# path to app
+WorkingDirectory=/var/www/django-cyradm/cyradm
+# the user that you want to run app by
+User=www-data
+
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+# Main process
+ExecStart=/var/www/django-cyradm/bin/uwsgi --ini /etc/uwsgi.ini
+
+[Install]
+WantedBy=multi-user.target
