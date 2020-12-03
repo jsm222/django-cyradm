@@ -1,7 +1,7 @@
 
 from collections import OrderedDict
 from django.utils.translation import ugettext_noop as _
-from django.contrib.auth.hashers import BasePasswordHasher, mask_hash, get_hasher, identify_hasher
+from django.contrib.auth.hashers import BasePasswordHasher, mask_hash
 from django.utils.crypto import get_random_string, constant_time_compare
 from django.utils.encoding import force_str
 
@@ -21,15 +21,18 @@ class CryptPasswordHasher(BasePasswordHasher):
     def encode(self, password, salt):
         crypt = self._load_library()
         assert len(salt) == 2
-        data = crypt.crypt(force_str(password), crypt.mksalt(crypt.METHOD_SHA512))
-        assert data is not None  # A platform like OpenBSD with a dummy crypt module.
+        data = crypt.crypt(force_str(password),
+                           crypt.mksalt(crypt.METHOD_SHA512))
+        assert data is not None
         # we don't need to store the salt, but Django used to do this
         return data
 
     def verify(self, password, encoded):
-        crypt = self._load_library()
         data = encoded
-        return constant_time_compare(data, crypt.crypt(force_str(password), data))
+        crypt = self._load_library()
+        return constant_time_compare(
+            data,
+            crypt.crypt(force_str(password), data))
 
     def safe_summary(self, encoded):
         return OrderedDict([
@@ -40,5 +43,3 @@ class CryptPasswordHasher(BasePasswordHasher):
 
     def harden_runtime(self, password, encoded):
         pass
-
-

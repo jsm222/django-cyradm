@@ -32,7 +32,7 @@ AUTHENTICATION_BACKENDS = (
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-    # Application definition
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -134,26 +134,26 @@ USE_TZ = True
 STATIC_URL = '/static/'
 DJCYRADM_SYNCIMAP = False
 DJCYRADM_IMAP = {
-        "SUBFOLDERS" : ['Sent','Spam','Trash','Drafts'],
-        "CYRUS":{
-            "HOST":"localhost",
-            "PORT": 143,
-            "STARTTLS":True,
-            "ADMINUSER":"cyrus",
-            "ADMINPASS":"cyrus", 
-            "DOMAIN":"example.com",
-            }
-        }
+    "SUBFOLDERS": ['Sent', 'Spam', 'Trash', 'Drafts'],
+    "CYRUS": {
+        "HOST": "192.168.1.18",
+        "PORT": 143,
+        "STARTTLS": True,
+        "ADMINUSER": "cyrus",
+        "ADMINPASS": "cyrus",
+        "DOMAIN": "example.com",
+    }
+}
 AUTH_USER_MODEL = 'djcyradm.MailUsers'
-LOGIN_URL="login"
-LOGIN_REDIRECT_URL="mail-users"
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "mail-users"
 PASSWORD_HASHERS = ['djcyradm.hashers.CryptPasswordHasher']
 
 LANGUAGES = [
     ('da', _('Danish')),
-    ('en', _('English')), 
+    ('en', _('English')),
 ]
-AXES_LOCKOUT_URL='/djcyradm/locked'
+AXES_LOCKOUT_URL = '/djcyradm/locked'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_SECURITY_WARN_AFTER=300
-SESSION_SECURITY_EXPIRE_AFTER=330
+SESSION_SECURITY_WARN_AFTER = 300
+SESSION_SECURITY_EXPIRE_AFTER = 330
