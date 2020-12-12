@@ -63,6 +63,19 @@ class Imap:
                 djcyradm_imap['CYRUS']['ADMINPASS'])
         return m
 
+    def subscribe(self, username, password):
+        if settings.DJCYRADM_SYNCIMAP is not True:
+            return None
+        djcyradm_imap = getattr(settings, "DJCYRADM_IMAP", Imap.DEFAULTS)
+        m = imaplib.IMAP4(host=djcyradm_imap['CYRUS']['HOST'],
+                          port=djcyradm_imap['CYRUS']['PORT'])
+        if djcyradm_imap['CYRUS']['STARTTLS']:
+            m.starttls()
+        m.login(username, password)
+        for mbox in djcyradm_imap["SUBFOLDERS"]:
+            m.subscribe("INBOX."+mbox)
+        m.logout()
+
     def parse_list_response(self, line):
         used = 0
         quota = 0
@@ -85,7 +98,6 @@ class Imap:
                 ret_list.append(naturalsize(int(quota[1]) * 1024,
                                             binary=True, format="%.3f"))
                 ret_list.append(round(int(quota[0]) / int(quota[1]) * 100, 5))
-                print(ret_list)
                 used = ret_list[0].split(" ")  # value unit
                 quota = ret_list[1].split(" ")  # value unit
                 alocale = to_locale(get_language())

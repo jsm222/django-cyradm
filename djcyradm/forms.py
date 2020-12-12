@@ -95,9 +95,21 @@ class LoginForm(AuthenticationForm):
 
 
 class MailUsersPasswordResetForm(AdminPasswordChangeForm):
+    username = None
+    newuser = False
+
     def __init__(self, pk=None, **kwargs):
         user = kwargs.pop('instance')
+        self.username = user.username
+        self.newuser = MailUsers.objects.filter(pk=user.id,
+                                                password__isnull=True).exists()
         super(MailUsersPasswordResetForm, self).__init__(user=user, **kwargs)
+
+    def save(self, commit=True):
+        pwd = super(MailUsersPasswordResetForm, self).save(commit=True)
+        if self.newuser:
+            Imap().subscribe(self.username, self.cleaned_data['password1'])
+        return pwd
 
 
 class MailUsersPasswordForm(PasswordChangeForm):
