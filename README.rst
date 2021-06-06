@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/jsm222/django-cyradm.svg?branch=master
-    :target: https://travis-ci.org/jsm222/django-cyradm
+.. image:: https://travis-ci.com/jsm222/django-cyradm.svg?branch=master
+    :target: https://travis-ci.com/jsm222/django-cyradm
 ABOUT
 ====================
 django-cyradm is a web interface to manage postfix controlling accounts, aliases and virtual (hosted) domains. Optionally it manages a belonging imap server for creating/deleting mailboxes and setting storage quotas. The project is meant to be suitable for small mail hosts using sql lookup tables with postfix. 
