@@ -123,7 +123,7 @@ AUTH_USER_MODEL = 'djcyradm.MailUsers'
                              domain=Domains.objects.filter(
                                 domain_name=settings.DJCYRADM_IMAP["CYRUS"]
                                                                   ["DOMAIN"]
-                                .first())
+                                ).first()
                              )
 
             user.save()
