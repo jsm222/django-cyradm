@@ -7,3 +7,22 @@
   nginx_server_name: django-cyradm.local
   django_cyradm_version: '0.1.2'
   django_debug: 'True'
+  db: mysql
+  prefix:
+    Debian: '/'
+    FreeBSD: '/usr/local/'
+  www_path:
+    Debian: '/var/www/'
+    FreeBSD: '/usr/local/www/'
+  www_user:
+    Debian: 'www-data'
+    FreeBSD: 'www'
+  ssl_key:
+    Debian: /etc/ssl/private/ssl-cert-snakeoil.key
+    FreeBSD: /usr/local/etc/cyrus/priv.key
+  ssl_cert:
+    Debian: /etc/ssl/certs/ssl-cert-snakeoil.pem
+    FreeBSD: /usr/local/etc/cyrus/cert.pem
+  python_path:
+    Debian: '/usr/bin/python3'
+    FreeBSD: '/usr/local/bin/python3.9'

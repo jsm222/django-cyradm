@@ -4,7 +4,7 @@ server {
 
     location / {
         include         uwsgi_params;
-        uwsgi_pass      unix:/var/www/django-cyradm/cyradm/mysite.sock;
+        uwsgi_pass      unix:{{ www_path[ansible_os_family] }}django-cyradm/cyradm/mysite.sock;
     }
     location /static {
         alias /var/www/django-cyradm/static;

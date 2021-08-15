@@ -6,126 +6,201 @@
     - name: Add python3-venv
       apt:
         name: python3-venv
+        state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: Add build-deps
       apt:
-        pkg: 
+        name:
         - libfreetype6-dev 
         - libjpeg62-turbo-dev 
         - zlib1g-dev 
         - python3-pip
         - python3-dev 
-        - libmariadbclient-dev
-        
-      become: yes  
+      become: true
+      when:
+        - ansible_os_family == 'Debian'
+    - name: install mariadbclient dev
+      apt:
+        name: libmariadbclient-dev
+        state: present
+      become: true
+      when:
+        - ansible_os_family == 'Debian'
+        - ansible_os_family == 'buster'
+    - name: install mariadbclient dev
+      apt:
+        name: libmariadb-dev-compat
+        state: present
+      become: true
+      when:
+        - ansible_os_family == 'Debian'
+        - ansible_os_family == 'bullseye'
+    - name: Add build-deps
+      become: true
+      pkgng:
+        name: freetype,jpeg-turbo-2.0.6,lzlib
+      when: ansible_os_family == 'FreeBSD'
     - name: Download https://github.com/jsm222/django-cyradm/releases/download/{{django_cyradm_version}}/django-cyradm-{{django_cyradm_version}}.tar.gz
       get_url:
         url: https://github.com/jsm222/django-cyradm/releases/download/{{django_cyradm_version}}/django-cyradm-{{django_cyradm_version}}.tar.gz
         dest: /tmp
         mode: '0440'
       become: yes
+
     - name: Update repositories cache and install Nginx
       apt:
         name: nginx
         update_cache: yes
       become: yes 
+      when: ansible_os_family == 'Debian'
+
+    - name: install Nginx
+      pkgng:
+        name: nginx
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
     - name: Create nginx directory structure
       file: 
         path : /etc/nginx/conf.d/
         state: directory
         mode: 0755
-      become: yes 
+      become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: Setup Nginx reverse proxy for uwsgi
       template:
         src: nginx.conf.j2
-        dest: /etc/nginx/sites-available/django-cyradm
+        dest: "{{prefix[ansible_os_family]}}etc/nginx/django-cyradm.conf"
+        owner: root
+        group: wheel
+        mode: 0644
+      register: nginx_needs_restart
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: include django-cyradm config
+      lineinfile:
+        line: include django-cyradm.conf;
+        path: /usr/local/etc/nginx/nginx.conf
+        state: present
+        insertbefore: '\}'
+      become: yes 
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: Setup Nginx reverse proxy for uwsgi
+      template:
+        src: nginx.conf.j2
+        dest: "{{prefix[ansible_os_family]}}etc/nginx/sites-available/django-cyradm"
         owner: root
         group: root
         mode: 0644
       register: nginx_needs_restart
-      become: yes 
+      become: yes
+      when: ansible_os_family == 'Debian'
     - name: enable site
       file:
         src: "/etc/nginx/sites-available/django-cyradm"
         dest: "/etc/nginx/sites-enabled/django-cyradm"
         state: link
-      become: yes 
+      become: yes
+      when: ansible_os_family == 'Debian'
     - name: Enabling Nginx service
       systemd:
         name: nginx
         enabled: yes
       become: yes 
+      when: ansible_os_family == 'Debian'
+
     - name: Starting Nginx service
       systemd:
         name: nginx
         state: restarted
         daemon_reload: yes
       become: yes 
+      when: ansible_os_family == 'Debian'
+
+    - name: enable nginx
+      community.general.sysrc:
+        name: nginx_enable
+        value: "YES"
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: Start nginx
+      service:
+        name: nginx
+        state: restarted
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
 
     - name: Create python virtual environment
       pip:
-        virtualenv_command: /usr/bin/python3 -m venv
-        virtualenv: "/var/www/django-cyradm"
+        virtualenv_command: "{{python_path[ansible_os_family]}} -m venv"
+        virtualenv: "{{www_path[ansible_os_family]}}django-cyradm"
         name: setuptools
       become: yes
-    - name: Install mysqlclient
+    - name: Install python mysqlclient
       pip:
-        virtualenv: "/var/www/django-cyradm"
+        virtualenv: "{{www_path[ansible_os_family]}}django-cyradm"
         name: mysqlclient
       become: yes
+      when: db == 'mysql'
     - name: Install uwsgi
       pip:
-        virtualenv: "/var/www/django-cyradm"
+        virtualenv: "{{www_path[ansible_os_family]}}django-cyradm"
         name: uwsgi
       become: yes
     - name: Install django-cyradm
       pip:
         name: /tmp/django-cyradm-{{django_cyradm_version}}.tar.gz  
-        virtualenv: "/var/www/django-cyradm"
+        virtualenv: "{{www_path[ansible_os_family]}}django-cyradm"
       become: yes
     
     - name: Check if project exists
       stat:
-        path: /var/www/django-cyradm/cyradm
+        path: "{{www_path[ansible_os_family]}}django-cyradm/cyradm"
       register: stat_result
 
     - name: Django create project
-      shell: "/var/www/django-cyradm/bin/django-admin  startproject cyradm"
+      shell: "{{www_path[ansible_os_family]}}django-cyradm/bin/django-admin  startproject cyradm"
       args:
-        chdir: "/var/www/django-cyradm"
+        chdir: "{{www_path[ansible_os_family]}}django-cyradm"
       become: yes
       when: not stat_result.stat.exists
     - name: Edit app settings
       template: 
         src: templates/django_cyradm_settings.py.j2
-        dest: /var/www/django-cyradm/cyradm/cyradm/settings.py
+        dest: "{{www_path[ansible_os_family]}}django-cyradm/cyradm/cyradm/settings.py"
       become: yes
     
     - name: Edit app urls settings
       template: 
         src: templates/django_cyradm_urls.py.j2
-        dest: /var/www/django-cyradm/cyradm/cyradm/urls.py
+        dest: "{{www_path[ansible_os_family]}}django-cyradm/cyradm/cyradm/urls.py"
       become: yes
     - name: Django migrate
-      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py migrate"
+      shell: "{{www_path[ansible_os_family]}}django-cyradm/bin/python cyradm/manage.py migrate"
       args:
-        chdir: "/var/www/django-cyradm"
+        chdir: "{{www_path[ansible_os_family]}}django-cyradm"
   
         
     - name: djcyradm_initialize data
-      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py loaddata djcyradm_initialdata"
+      shell: "{{www_path[ansible_os_family]}}django-cyradm/bin/python cyradm/manage.py loaddata djcyradm_initialdata"
       args:
-        chdir: "/var/www/django-cyradm"
+        chdir: "{{www_path[ansible_os_family]}}django-cyradm"
 
     - name: djcyradm_initialize
-      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py djcyradm_initialize --update"
+      shell: "{{www_path[ansible_os_family]}}django-cyradm/bin/python cyradm/manage.py djcyradm_initialize --update"
       args:
-        chdir: "/var/www/django-cyradm"
+        chdir: "{{www_path[ansible_os_family]}}django-cyradm"
 
     - name: collectstatic
-      shell: "/var/www/django-cyradm/bin/python cyradm/manage.py collectstatic --noinput"
+      shell: "{{www_path[ansible_os_family]}}django-cyradm/bin/python cyradm/manage.py collectstatic --noinput"
       args:
-        chdir: "/var/www/django-cyradm"
+        chdir: "{{www_path[ansible_os_family]}}django-cyradm"
       become: yes
     
     - name: uwsgi.ini
@@ -136,6 +211,7 @@
         group: root
         mode: 0644
       become: yes
+      when: ansible_os_family == 'Debian'
     - name: Make systemd service file
       template:
         src: templates/django-cyradm.service.j2
@@ -146,28 +222,14 @@
       notify:
       - reload systemctl
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: Set permissions
       file:
-        dest: /var/www/django-cyradm/cyradm
-        owner: www-data
-        group: www-data
+        dest: "{{www_path[ansible_os_family]}}django-cyradm/cyradm"
+        owner: "{{www_user[ansible_os_family]}}"
+        group: "{{www_user[ansible_os_family]}}"
         recurse: true
-      become: yes
-    - name: django-cyradm start
-      service: 
-        name: django-cyradm.service 
-        state: restarted
-        enabled: yes
-      become: yes
-    - name: Ensure a locale exists
-      locale_gen:
-        name: da_DK
-        state: present
-      become: yes
-    - name: Ensure a locale exists
-      locale_gen:
-        name: en_US
-        state: present
       become: yes
 
     - name: django-cyradm start
@@ -176,3 +238,29 @@
         state: restarted
         enabled: yes
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: django-cyradm add to rc.local
+      lineinfile:
+        path: /etc/rc.local
+        state: present
+        line: "{{www_path[ansible_os_family]}}django-cyradm/bin/uwsgi -H {{www_path[ansible_os_family]}}django-cyradm/ --chdir /usr/local/www/django-cyradm/cyradm/ --module=cyradm.wsgi --uid=80 --gid=80 --master --socket mysite.sock --daemonize=/var/log/djcyradm.log"
+        create: yes
+        owner: root
+        group: wheel
+        mode: '0644'
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+    - name: start djcyradm
+      shell:
+        cmd: "{{www_path[ansible_os_family]}}django-cyradm/bin/uwsgi -H {{www_path[ansible_os_family]}}django-cyradm/ --chdir /usr/local/www/django-cyradm/cyradm/ --module=cyradm.wsgi --uid=80 --gid=80 --master --socket mysite.sock --daemonize=/var/log/djcyradm.log"
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: django-cyradm start
+      service: 
+        name: django-cyradm.service 
+        state: restarted
+        enabled: yes
+      become: true
+      when: ansible_os_family == 'Debian'

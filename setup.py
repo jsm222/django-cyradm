@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-cyradm',
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License',
@@ -34,6 +34,7 @@ setup(
     ],
     setup_requires=["wheel"],
     install_requires=["wheel",
+                      "Babel==2.9.1",
                       "Django==3.1.12",
                       "django-axes==5.2.2",
                       "django-bootstrap3==12.0.3",

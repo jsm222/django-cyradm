@@ -6,6 +6,32 @@
         name: libpam-mysql
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "Install mariadb"
+      pkgng:
+        name: "mariadb105-server"
+        state: present
+      become: yes
+      when:
+        - ansible_os_family == 'FreeBSD'
+        - db == 'mysql'
+    - name: "Install build deps from pam_mysql"
+      pkgng:
+        name: libtool,autoconf,automake
+        state: present
+      become: true
+      when:
+        - ansible_os_family == 'FreeBSD'
+        - db == 'mysql'
+    - name: "Install pam_mysql from ports"
+      shell:
+        chdir: /usr/ports/security/pam-mysql
+        cmd: BATCH="Yes" make clean install
+        creates: /usr/local/lib/pam_mysql.so
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Modify /etc/pam-mysql.conf"
       template:
         src: templates/pam-mysql.conf.j2
@@ -16,30 +42,53 @@
         name: "mariadb-server"
         state: present
       become: yes
-    
+      when:
+        - ansible_os_family == 'Debian'
+        - db == 'mysql'
+
+    - name: "start mariadb"
+      service:
+        name: "mysql-server"
+        state: started
+      become: yes
+      when:
+        - ansible_os_family == 'FreeBSD'
+        - db == 'mysql'
     - name: "create dbuser {{dbuser}}"
       shell:
-        cmd: "mysql -e \"create user IF NOT EXISTS '{{dbuser}}'@'localhost' IDENTIFIED BY '{{dbpassword}}'\";"
+        cmd: "mysql -h localhost -e \"create user IF NOT EXISTS '{{dbuser}}'@'localhost' IDENTIFIED BY '{{dbpassword}}'\";"
       become: true
     - name: "create database {{dbname}}"
       shell:
-        cmd: "mysql -e \"create database IF NOT EXISTS {{dbname}}\";"
+        cmd: "mysql -h localhost -e \"create database IF NOT EXISTS {{dbname}}\";"
       become: true
+      when: db == 'mysql'
     - name: "grant privileges to {{dbuser}} on db {{dbname}}"
       shell:
-        cmd: "mysql -e \"GRANT ALL PRIVILEGES on {{dbname}}.* to '{{dbuser}}'@'localhost';\";"
+        cmd: "mysql -h localhost -e \"GRANT ALL PRIVILEGES on {{dbname}}.* to '{{dbuser}}'@'localhost';\";"
       become: true
+      when: db == 'mysql'
+
     - name: "install sals2-bin"
       apt: 
         name: sasl2-bin
       become: true
+      when: ansible_os_family == 'Debian'
+
+    - name: "install cyrus-sasl-saslauthd"
+      pkgng:
+        name: cyrus-sasl-saslauthd
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Configure salsauthd default start"
       lineinfile:
-        path: /etc/default/saslauthd
+        path: "{{ prefix[ansible_os_family]}}etc/default/saslauthd"
         regexp: '^START='
         line: START=yes
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
  
 
     - name: "Install cyrus-imapd"
@@ -47,33 +96,53 @@
         name: cyrus-imapd
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "Install cyrus-imapd"
+      pkgng:
+        name: cyrus-imapd32
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Install ssl-cert"
       apt: 
         name: ssl-cert
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: "Modify /etc/pam.d/imap"
       template:
         src: templates/pam.j2
-        dest: /etc/pam.d/imap
+        dest: "/etc/pam.d/imap"
       become: yes
-    
+
     - name: "add imap user to ssl-cert"
       user:
         name: cyrus
         append: yes
         groups: ssl-cert
       become: yes
+      when: ansible_os_family == 'Debian'
     - name: "Configure allowplaintext"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{ prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^allowplaintext:'
         line: 'allowplaintext: no'
         state: present
       become: yes
+    - name: "Configure unixhierarchysep: no"
+      lineinfile:
+        path: "{{ prefix[ansible_os_family]}}etc/imapd.conf"
+        regexp: '^unixhierarchysep:'
+        line: 'unixhierarchysep: no'
+        state: present
+      become: yes
+
     - name: "Configure sasl_mech_list"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{ prefix[ansible_os_family]}}/etc/imapd.conf"
         regexp: '^sasl_mech_list:'
         line: 'sasl_mech_list: LOGIN PLAIN'
         state: present
@@ -81,7 +150,7 @@
     
     - name: "Configure sasl_pwcheck_method"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^sasl_pwcheck_method:'
         line: 'sasl_pwcheck_method: saslauthd'
         state: present
@@ -89,94 +158,195 @@
     
     - name: "Configure tls_cert_file"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^tls_server_cert:'
-        line: 'tls_server_cert: /etc/ssl/certs/ssl-cert-snakeoil.pem'
+        line: 'tls_server_cert: {{ssl_cert[ansible_os_family]}}'
         state: present
       become: yes
     - name: "Configure tls_key_file"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^tls_server_key:'
-        line: 'tls_server_key: /etc/ssl/private/ssl-cert-snakeoil.key'
+        line: 'tls_server_key: {{ssl_key[ansible_os_family]}}'
         state: present
       become: yes
     - name: "Configure admin"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^admins:'
         line: 'admins: {{cyrusadmin}}'
         state: present
       become: yes
     - name: "Configure defaultdomain"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^defaultdomain:'
         line: 'defaultdomain: localhost'
         state: present
       become: yes
     - name: "Configure virtdomain"
       lineinfile:
-        path: /etc/imapd.conf
+        path: "{{prefix[ansible_os_family]}}etc/imapd.conf"
         regexp: '^virtdomains:'
         line: 'virtdomains: userid'
         state: present
       become: yes
     - name: "Configure cyrus.conf disable pop3"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+(pop3.*)$'
         backrefs: yes
         line: '\1#\2'
       become: yes
     - name: "Configure cyrus.conf disable nntp"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+(nntp.*$)'
         backrefs: yes
         line: '\1#\2'
       become: yes
     - name: "Configure cyrus.conf disable http"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+(http.*$)'
         backrefs: yes
         line: '\1#\2'
       become: yes
     - name: "Configure cyrus.conf enable imap"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+#(imap\s+cmd="imapd.*$)'
         backrefs: yes
         line: '\1\2'
       become: yes
     - name: "Configure cyrus.conf enable imaps"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+#(imaps\s+cmd="imapd.*$)'
         backrefs: yes
         line: '\1\2'
       become: yes
+
+    - name: "create /var/imap"
+      file:
+        path: /var/imap
+        state: directory
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "create /var/spool/imap"
+      file:
+        path: /var/imap
+        state: directory
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "run mkimap"
+      shell:
+        cmd: /usr/local/cyrus/sbin/mkimap
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Restart imapd"
       service: 
         name: cyrus-imapd
         state: restarted
       become: true
+      when: ansible_os_family == 'Debian'
+
+    - name: "Restart saslauthd"
+      service:
+        name: saslauthd
+        state: restarted
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "Restart imapd"
+      service:
+        name: imapd
+        state: restarted
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Restart imapd"
+      service:
+        name: mysql-server
+        state: restarted
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "Install py37-cryptography"
+      pkgng:
+        name: py37-cryptography
+        state: latest
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Create /usr/local/etc/cyrus"
+      file:
+        path: /usr/local/etc/cyrus
+        state: directory
+        owner: cyrus
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+
+    - name: generate key
+      community.crypto.openssl_privatekey:
+        path: "{{ssl_key[ansible_os_family]}}"
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+    - name: set permission on sslkey
+      file:
+        path: "{{ssl_key[ansible_os_family]}}"
+        owner: cyrus
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: Generate an OpenSSL Certificate Signing Request
+      community.crypto.openssl_csr:
+        path: /tmp/snake.csr
+        privatekey_path: "{{ssl_key[ansible_os_family]}}"
+        common_name: "{{ ansible_hostname }}"
+      when: ansible_os_family == 'FreeBSD'
+      become: true
+
+    - name: generate cert
+      community.crypto.x509_certificate:
+        path: "{{ssl_cert[ansible_os_family]}}"
+        privatekey_path: "{{ssl_key[ansible_os_family]}}"
+        csr_path: /tmp/snake.csr
+        provider: selfsigned
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Install postfix"
       apt:
-        pkg:
+        name:
         - postfix
         - postfix-mysql
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "Install postfix from ports"
+      shell:
+        chdir: /usr/ports/mail/postfix-sasl
+        cmd: OPTIONS_FILE_SET="MYSQL" BATCH="Yes" make clean install
+        creates: /usr/local/sbin/postconf
+      become: yes
+      when:
+      - ansible_os_family == 'FreeBSD'
+      - db == 'mysql'
     - name: "create /etc/postfix/sasl"
       file:
         path: /etc/postfix/sasl
         state: directory
+      become: true
+      when: ansible_os_family == 'Debian'
     - name: "create /etc/postfix/sasl/smtpd.conf"
       file:
         path: /etc/postfix/sasl/smtpd.conf
         state: touch
+      when: ansible_os_family == 'Debian'
       become: yes
     - name: "set pwcheck method"
       lineinfile:
@@ -184,12 +354,39 @@
         line: "pwcheck_method: saslauthd"
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: "set mechlist"
       lineinfile:
         path: /etc/postfix/sasl/smtpd.conf
         line: "mech_list: PLAIN LOGIN"
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "create /usr/local/lib/sasl2/smtpd.conf"
+      file:
+        path: /usr/local/lib/sasl2/smtpd.conf
+        state: touch
+      become: true
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "set pwcheck method"
+      lineinfile:
+        path: /usr/local/lib/sasl2/smtpd.conf
+        line: "pwcheck_method: saslauthd"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "set mechlist"
+      lineinfile:
+        path: /usr/local/lib/sasl2/smtpd.conf
+        line: "mech_list: PLAIN LOGIN"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
     - name: "Configure saslauthd"
       lineinfile:
         path: /etc/default/saslauthd
@@ -197,12 +394,61 @@
         line: OPTIONS="-c -r -m /var/run/saslauthd"
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "Configure saslauthd"
+      community.general.sysrc:
+        name: saslauthd_flags
+        value: "-n 0 -a pam -r"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Enable mysql"
+      community.general.sysrc:
+        name: mysql_enable
+        value: "YES"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Enable postfix"
+      community.general.sysrc:
+        name: postfix_enable
+        value: "YES"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Disable sendmail"
+      community.general.sysrc:
+        name: sendmail_enable
+        value: "NONE"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+    - name: "Enable imapd"
+      community.general.sysrc:
+        name: cyrus_imapd_enable
+        value: "YES"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "Enable saslauthd"
+      community.general.sysrc:
+        name: saslauthd_enable
+        value: "YES"
+        state: present
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+
     - name: "Copy /etc/default/saslauthd to /etc/default/saslauthd-postfix"
       copy:
         remote_src: yes
         src: /etc/default/saslauthd
         dest: /etc/default/saslauthd-postfix
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: "Create salsauthd dir in postfix chroot"
       file:
         state: directory
@@ -211,12 +457,15 @@
         owner: root
         group: sasl
       become: yes
+      when: ansible_os_family == 'Debian'
     - name: "Add user postfix to group sasl"
       user:
         name: postfix
         append: yes
         groups: sasl
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: "Configure salsauthd socket in postfix chroot"
       lineinfile:
         path: /etc/default/saslauthd-postfix
@@ -224,6 +473,8 @@
         line: OPTIONS="-c -r -m /var/spool/postfix/var/run/saslauthd"
         state: present
       become: yes
+      when: ansible_os_family == 'Debian'
+
     - name: "Restart saslauthd"
       service:
         name: saslauthd
@@ -235,7 +486,7 @@
         src: templates/pam.j2
         dest: /etc/pam.d/smtp
       become: yes
-    
+
     - name: "create /var/spool/postfix/var/imap/socket"
       file:
         path: /var/spool/postfix/var/imap/socket
@@ -246,40 +497,48 @@
       become: yes
     - name: "Configure lmtpunix in postfix chroot"
       lineinfile:
-        path: /etc/cyrus.conf
+        path: "{{ prefix[ansible_os_family]}}etc/cyrus.conf"
         regexp: '^(\s)+lmtpunix\s+cmd="lmtpd" listen=\".*\"(.*$)'
         backrefs: yes
         line: '\1 lmtpunix cmd="lmtpd" listen="/var/spool/postfix/var/imap/socket/lmtp" \2'
         state: present
       become: yes
-    
+
     - name: "Restart imapd"
       service:
         name: cyrus-imapd
         state: restarted
       become: yes
+      when: ansible_os_family == 'Debian'
 
-    - name: "Create /etc/postfix/virtual_mailbox_domains.cf"
+    - name: "Restart imapd"
+      service:
+        name: imapd
+        state: restarted
+      become: yes
+      when: ansible_os_family == 'FreeBSD'
+
+    - name: "Create {{ prefix[ansible_os_family]}}etc/postfix/virtual_mailbox_domains.cf"
       template:
         src: templates/virtual_mailbox_domains.cf.j2
-        dest: /etc/postfix/virtual_mailbox_domains.cf
+        dest: "{{ prefix[ansible_os_family]}}etc/postfix/virtual_mailbox_domains.cf"
         owner: root
         group: postfix
         mode: '0640'
       become: yes
-    - name: "Create /etc/postfix/virtual_alias_domains.cf"
+    - name: "Create {{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_domains.cf"
       template:
         src: templates/virtual_alias_domains.cf.j2
-        dest: /etc/postfix/virtual_alias_domains.cf
+        dest: "{{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_domains.cf"
         owner: root
         group: postfix
         mode: '0640'
       become: yes
 
-    - name: "Create /etc/postfix/virtual_alias_maps.cf"
+    - name: "Create {{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_maps.cf"
       template:
         src: templates/virtual_alias_maps.cf.j2
-        dest: /etc/postfix/virtual_alias_maps.cf
+        dest: "{{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_maps.cf"
         owner: root
         group: postfix
         mode: '0640'
@@ -289,6 +548,9 @@
         cmd: "{{item}}"
       with_items:
         - "postconf -e 'smtpd_tls_auth_only=yes'"
+        - "postconf -e 'smtpd_tls_cert_file = {{ssl_cert[ansible_os_family]}}'"
+        - "postconf -e 'smtpd_tls_key_file = {{ssl_key[ansible_os_family]}}'"
+        - "postconf -e 'smtpd_use_tls = yes'"
         - "postconf -e 'smtpd_sasl_local_domain = $myhostname'"
         - "postconf -e 'smtpd_sasl_auth_enable = yes'"
         - "postconf -e 'broken_sasl_auth_clients = yes'"
@@ -296,13 +558,23 @@
         - "postconf -e 'smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination'"
         - "postconf -e 'mailbox_transport = lmtp:unix:/var/imap/socket/lmtp'"
         - "postconf -e 'virtual_transport = $mailbox_transport'"
-        - "postconf -e  'virtual_mailbox_domains = mysql:/etc/postfix/virtual_mailbox_domains.cf'"
-        - "postconf -e  'virtual_alias_domains= mysql:/etc/postfix/virtual_alias_domains.cf'"
-        - "postconf -e  'virtual_alias_maps = mysql:/etc/postfix/virtual_alias_maps.cf'"
+        - "postconf -e  'virtual_mailbox_domains = {{db}}:{{ prefix[ansible_os_family]}}etc/postfix/virtual_mailbox_domains.cf'"
+        - "postconf -e  'virtual_alias_domains= {{db}}:{{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_domains.cf'"
+        - "postconf -e  'virtual_alias_maps = {{db}}:{{ prefix[ansible_os_family]}}etc/postfix/virtual_alias_maps.cf'"
       become: yes
+
+    - name: Set lmtp to chroot
+      lineinfile:
+        path: /usr/local/etc/postfix/master.cf
+        regexp: ^lmtp\s*unix\s*[\-]\s*[\-]\s*n\s*[\-]\s*[\-]\s*lmtp
+        line: "lmtp      unix  -       -       y       -       -       lmtp"
+        state: present
+      become: true
+      when: ansible_os_family == 'FreeBSD'
     - name: "Restart postfix"
       service:
         name: postfix
         state: restarted
       become: yes
+
 - import_playbook: django-cyradm.yml 
