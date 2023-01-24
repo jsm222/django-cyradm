@@ -3,7 +3,7 @@ container:
 test_task:
   pip_cache:
     folder: ~/.cache/pip
-    populate_script: 
+    test_script: 
       - pip install tox
       - pip install .
-  test_script: tox
+      - tox
