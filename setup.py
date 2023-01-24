@@ -41,7 +41,7 @@ setup(
                       "django-filter==2.4.0",
                       "django-ipware==2.1.0",
                       "django-ranged-response==0.2.0",
-                      "django-session-security==2.6.6",
+                      "django-session-security==2.6.7",
                       "django-simple-captcha==0.5.12",
                       "django-tables2==2.4.0",
                       "humanize==0.5.1",
