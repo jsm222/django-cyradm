@@ -1,6 +1,5 @@
 container:
-  image: python:slim
-
+  image: alpine/flake8:latest
 test_task:
   pip_cache:
     folder: ~/.cache/pip
