@@ -1,9 +1,7 @@
 container:
   image:  python:slim
 test_task:
-  pip_cache:
-    folder: ~/.cache/pip
-    test_script: 
-      - pip install tox
-      - pip install .
-      - tox
+  test_script: 
+  - pip install .
+  - pip install tox
+  - tox
