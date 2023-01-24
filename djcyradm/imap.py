@@ -6,8 +6,7 @@ from contextlib import contextmanager
 
 from humanize import naturalsize
 from django.utils.translation import ugettext_lazy as _,\
-    get_language, to_locale
-
+    get_language
 from django.conf import settings
 
 storage_regex = r'(.* \(STORAGE (?P<used>\d+)\s+(?P<limit>\d+)\))'
@@ -100,9 +99,9 @@ class Imap:
                 ret_list.append(round(int(quota[0]) / int(quota[1]) * 100, 5))
                 used = ret_list[0].split(" ")  # "value unit"
                 quota = ret_list[1].split(" ")  # "value unit"
-                usedf = format_decimal(float(used[0]),locale=get_language())
-                quotaf = format_decimal(float(quota[0]),locale=get_language())
-                percentage = format_decimal(ret_list[2],locale=get_language())
+                usedf = format_decimal(float(used[0]), locale=get_language())
+                quotaf = format_decimal(float(quota[0]), locale=get_language())
+                percentage = format_decimal(ret_list[2], locale=get_language())
                 ret = "{0}{1}/{2}{3} {4}%".format(usedf, used[1],
                                                   quotaf, quota[1],
                                                   percentage)

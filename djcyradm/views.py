@@ -95,8 +95,9 @@ class MailUserUpdatePassword(LoggedInPermissionsMixin, UpdateView):
     form_class = MailUsersPasswordForm
     template_name = "djcyradm/form.html"
     permission_required = 'djcyradm.change_mailusers_password'
-    permission_denied_message = _("You are not allowed to change this password. \
-                                   (Use manage.py for main cyrus admin)")
+    permission_denied_message = _("You are not allowed to change"
+                                  " this password."
+                                  " (Use manage.py for main cyrus admin)")
     raise_exception = True
 
     def get_form_kwargs(self):
@@ -362,8 +363,8 @@ domains and all accounts an aliases belonging to them?'
                     messages.\
                         add_message(request,
                                     WARNING,
-                                    ("Could not delete domain of main cyrus user\
-                                     %(domain)s") %
+                                    ("Could not delete domain of"
+                                     "main cyrus user %(domain)s") %
                                     {'domain': adn.domain.domain_name})
                 else:
                     do_select.append(d)

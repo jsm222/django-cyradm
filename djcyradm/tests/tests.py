@@ -8,10 +8,11 @@ import djcyradm.overrides # noqa
 from django.contrib.auth.models import Group
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TransactionTestCase
-from selenium.webdriver import Firefox
+from selenium.webdriver import Remote
 from selenium.webdriver.support.select import Select
 from djcyradm.models import MailUsers, Domains, VirtualDelivery
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.common.by import By
 
 
 @override_settings(DJCYRADM_SYNCIMAP=False,
@@ -25,7 +26,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
         super(MySeleniumTests, cls).setUpClass()
         options = FirefoxOptions()
         options.add_argument("--headless")
-        cls.selenium = Firefox(options=options)
+
+        cls.selenium = Remote(command_executor='http://127.0.0.1:4444',
+                              options=options)
         cls.selenium.implicitly_wait(40)
 
     @classmethod
@@ -35,46 +38,50 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
     def make_alias_assert_noperm(self):
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_xpath(
-                "//ul[@class='messages']/li"))
-        self.assertEquals(self.selenium.find_element_by_xpath(
-            "//ul[@class='messages']/li").text,
-            "You are not allowed to add (any further) aliases"
-            )
+                lambda driver:
+                self.selenium.find_element(By.XPATH,
+                                           "//ul[@class='messages']/li"))
+        self.assertEquals(
+           self.selenium.find_element(
+                By.XPATH, "//ul[@class='messages']/li").text,
+           "You are not allowed to add (any further) aliases"
+        )
 
     def make_alias_assert_error(self, error="", idstr="id_alias", sel="input"):
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_xpath(
+            lambda driver:
+            self.selenium.find_element(
+                By.XPATH,
                 "//" + sel + "[@id='" + idstr +
                 "']/..//div[@class='help-block'][1]")
                 )
-        # self.assertEquals(
-        #   self.selenium.find_element_by_xpath("//"+sel+"[@id='"+idstr+"']/..//div[@class='help-block']").text,
-        #  error)
         sleep(1)
-        self.assertEquals(self.selenium.find_element_by_xpath(
-            "//" + sel + "[@id='" + idstr +
-            "']/..//div[@class='help-block'][1]").text, error)
+        self.assertEquals(self.selenium.find_element(
+                By.XPATH,
+                "//" + sel + "[@id='" + idstr +
+                "']/..//div[@class='help-block'][1]").text, error)
 
     def make_alias_assert_success(self, alias, dest, alias_domain):
         sleep(1)
         try:
 
-            self.selenium.find_element_by_link_text("Aliases").click()
+            self.selenium.find_element(By.LINK_TEXT, "Aliases").click()
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_xpath(
-                    "//li[contains(@class,'open')]/ul/li"
-                    "//a[@href='/djcyradm/aliases/']")
+                lambda driver: self.selenium.find_element(
+                        By.XPATH,
+                        "//li[contains(@class,'open')]/ul/li"
+                        "//a[@href='/djcyradm/aliases/']")
                     )
 
-            self.selenium.find_element_by_xpath(
-                "//li[contains(@class,'open')]/ul/li//"
-                "a[@href='/djcyradm/aliases/']").click()
+            self.selenium.find_element(
+                    By.XPATH,
+                    "//li[contains(@class,'open')]/ul/li//"
+                    "a[@href='/djcyradm/aliases/']").click()
 
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_xpath("//td[5]"))
+                lambda driver: self.selenium.find_element(By.XPATH, "//td[5]"))
             sleep(1)
-            for x in self.selenium.find_elements_by_xpath("//td[5]"):
+            for x in self.selenium.find_elements(By.XPATH, "//td[5]"):
                 self.assertEquals(x.text, dest)
         except NoSuchElementException as e:
             raise e
@@ -96,23 +103,26 @@ class MySeleniumTests(StaticLiveServerTestCase):
                 username="cyrus").has_perm("djcyradm.list_domains"))
         self.selenium.get('%s%s' % (self.live_server_url, '/djcyradm/login/'))
 
-        self.selenium.find_element_by_id("id_username").clear()
-        self.selenium.find_element_by_id("id_username").send_keys(
+        self.selenium.find_element(By.ID, "id_username").clear()
+        self.selenium.find_element(By.ID, "id_username").send_keys(
             "myuser@example.com")
-        self.selenium.find_element_by_id("id_password").clear()
-        self.selenium.find_element_by_id("id_password").send_keys("cyrus")
-        self.selenium.find_element_by_css_selector(
-            "button.btn.btn-primary").click()
+        self.selenium.find_element(By.ID, "id_password").clear()
+        self.selenium.find_element(By.ID, "id_password").send_keys("cyrus")
+        self.selenium.find_element(
+                                   By.CSS_SELECTOR,
+                                   "button.btn.btn-primary").click()
         sleep(1)
 
     def test_login(self):
         self.do_t_login()
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_xpath(
-                "//div[@id='bar1']//li/a[@href='/djcyradm/aliases/']"))
+            lambda driver: self.selenium.find_element(
+                    By.XPATH,
+                    "//div[@id='bar1']//li/a[@href='/djcyradm/aliases/']"))
         self.assertEquals(
-            self.selenium.find_element_by_xpath(
-                "//div[@id='bar1']//li/a[@href='/djcyradm/aliases/']"
+            self.selenium.find_element(
+                    By.XPATH,
+                    "//div[@id='bar1']//li/a[@href='/djcyradm/aliases/']"
                 ).get_attribute("class"), '')
         # login
 
@@ -171,7 +181,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         self.selenium.get('%s%s' %
                           (self.live_server_url, '/djcyradm/mail-users'))
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_link_text("Aliases"))
+            lambda driver: self.selenium.find_element(By.LINK_TEXT, "Aliases"))
         self.make_alias(
             alias="test2@example.com",
             dest="myuser@example.com",
@@ -189,27 +199,30 @@ class MySeleniumTests(StaticLiveServerTestCase):
             ordered=False)
 
     def make_alias(self, alias, alias_domain, dest):
-        self.selenium.find_element_by_link_text("Aliases").click()
+        self.selenium.find_element(By.LINK_TEXT, "Aliases").click()
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_xpath(
+            lambda driver: self.selenium.find_element(
+                By.XPATH,
                 "//li[contains(@class,'open')]/ul/li//a[@href='"
                 "/djcyradm/aliases/add/']"))
         sleep(1)
-        self.selenium.find_element_by_xpath(
+        self.selenium.find_element(
+            By.XPATH,
             "//li[contains(@class,'open')]/ul/li//a"
             "[@href='/djcyradm/aliases/add/']").click()
         WebDriverWait(self.selenium, 20).until(
-            lambda driver: self.selenium.find_element_by_id("id_alias"))
+            lambda driver: self.selenium.find_element(By.ID, "id_alias"))
 
         sleep(1)
-        self.selenium.find_element_by_id("id_alias").clear()
-        self.selenium.find_element_by_id("id_alias").send_keys(alias)
-        Select(self.selenium.find_element_by_id("id_alias_domain")
+        self.selenium.find_element(By.ID, "id_alias").clear()
+        self.selenium.find_element(By.ID, "id_alias").send_keys(alias)
+        Select(self.selenium.find_element(By.ID, "id_alias_domain")
                ).select_by_visible_text(alias_domain)
-        Select(self.selenium.find_element_by_id("id_dest")
+        Select(self.selenium.find_element(By.ID, "id_dest")
                ).select_by_visible_text(dest)
-        self.selenium.find_element_by_css_selector(
-            "button.btn.btn-primary").click()
+        self.selenium.find_element(
+                By.CSS_SELECTOR,
+                "button.btn.btn-primary").click()
 
     def prep_add_ccount(self):
 
@@ -221,35 +234,39 @@ class MySeleniumTests(StaticLiveServerTestCase):
                              name="domainadmins").exists():
             self.selenium.get(self.live_server_url +
                               "/djcyradm/mail-users/add/")
-            self.assertEquals(self.selenium.find_element_by_xpath(
+            self.assertEquals(self.selenium.find_element(
+                By.XPATH,
                 "/html/body/ul/li").text,
                     "You are not allowed to add accounts")
             return False
         else:
             self.selenium.get(self.live_server_url + "/djcyradm/mail-users")
-            self.selenium.find_element_by_link_text("Accounts").click()
-            self.selenium.find_element_by_link_text("Add").click()
+            self.selenium.find_element(By.LINK_TEXT, "Accounts").click()
+            self.selenium.find_element(By.LINK_TEXT, "Add").click()
         return True
 
     def test_addaccount_max_quota_to_big(self):
         self.do_t_login()
         if self.prep_add_ccount():
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_id(
+                lambda driver: self.selenium.find_element(
+                    By.ID,
                     "id_username"))
             sleep(1)
-            self.selenium.find_element_by_id("id_username").clear()
-            self.selenium.find_element_by_id("id_username").send_keys("test")
-            Select(self.selenium.find_element_by_id(
+            self.selenium.find_element(By.ID, "id_username").clear()
+            self.selenium.find_element(By.ID, "id_username").send_keys("test")
+            Select(self.selenium.find_element(
+                By.ID,
                 "id_domain")).select_by_visible_text("example.com")
-            self.selenium.find_element_by_id("id_quota").clear()
-            self.selenium.find_element_by_id("id_quota").send_keys(
+            self.selenium.find_element(By.ID, "id_quota").clear()
+            self.selenium.find_element(By.ID, "id_quota").send_keys(
                 str(Domains.objects.filter(
                     domain_name="example.com").
                     first().max_quota_per_account + 1))
-            self.selenium.find_element_by_id("id_max_aliases").clear()
-            self.selenium.find_element_by_id("id_max_aliases").send_keys("1")
-            self.selenium.find_element_by_css_selector(
+            self.selenium.find_element(By.ID, "id_max_aliases").clear()
+            self.selenium.find_element(By.ID, "id_max_aliases").send_keys("1")
+            self.selenium.find_element(
+                By.CSS_SELECTOR,
                 "button.btn.btn-primary").click()
             self.make_alias_assert_error(
                 idstr="id_quota",
@@ -263,24 +280,26 @@ class MySeleniumTests(StaticLiveServerTestCase):
         self.do_t_login()
         if self.prep_add_ccount():
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_id(
-                    "id_username"))
+                lambda driver: self.selenium.find_element(
+                    By.ID, "id_username"))
             driver = self.selenium
             sleep(1)
-            driver.find_element_by_id("id_username").clear()
-            driver.find_element_by_id("id_username").send_keys("test")
-            Select(driver.find_element_by_id(
+            driver.find_element(By.ID, "id_username").clear()
+            driver.find_element(By.ID, "id_username").send_keys("test")
+            Select(driver.find_element(
+                By.ID,
                 "id_domain")).select_by_visible_text("example.com")
-            driver.find_element_by_id("id_quota").clear()
-            driver.find_element_by_id("id_quota").send_keys(
+            driver.find_element(By.ID, "id_quota").clear()
+            driver.find_element(By.ID, "id_quota").send_keys(
                 str(Domains.objects.filter(
                     domain_name="example.com").first().max_quota_per_account))
-            driver.find_element_by_id("id_max_aliases").clear()
-            driver.find_element_by_id("id_max_aliases").send_keys(
+            driver.find_element(By.ID, "id_max_aliases").clear()
+            driver.find_element(By.ID, "id_max_aliases").send_keys(
                 str(Domains.objects.filter(
                     domain_name="example.com")
                     .first().max_aliases_per_account + 1))
-            driver.find_element_by_css_selector(
+            driver.find_element(
+                By.CSS_SELECTOR,
                 "button.btn.btn-primary").click()
             self.make_alias_assert_error(
                 idstr="id_max_aliases",
@@ -296,25 +315,27 @@ class MySeleniumTests(StaticLiveServerTestCase):
         driver = self.selenium
         if self.prep_add_ccount():
             WebDriverWait(self.selenium, 20).until(
-                lambda driver: self.selenium.find_element_by_id(
+                lambda driver: self.selenium.find_element(
+                    By.ID,
                     "id_username"))
 
             sleep(1)
-            driver.find_element_by_id("id_username").clear()
-            driver.find_element_by_id("id_username").send_keys("test")
-            Select(driver.find_element_by_id("id_domain")
+            driver.find_element(By.ID, "id_username").clear()
+            driver.find_element(By.ID, "id_username").send_keys("test")
+            Select(driver.find_element(By.ID, "id_domain")
                    ).select_by_visible_text("example.com")
-            driver.find_element_by_id("id_quota").clear()
-            driver.find_element_by_id("id_quota").send_keys(
+            driver.find_element(By.ID, "id_quota").clear()
+            driver.find_element(By.ID, "id_quota").send_keys(
                 str(Domains.objects.filter(
                     domain_name="example.com")
                     .first().max_quota_per_account + 1))
-            driver.find_element_by_id("id_max_aliases").clear()
-            driver.find_element_by_id("id_max_aliases").send_keys(
+            driver.find_element(By.ID, "id_max_aliases").clear()
+            driver.find_element(By.ID, "id_max_aliases").send_keys(
                 str(Domains.objects.filter(
                     domain_name="example.com")
                     .first().max_aliases_per_account + 1))
-            driver.find_element_by_css_selector(
+            driver.find_element(
+                By.CSS_SELECTOR,
                 "button.btn.btn-primary").click()
             sleep(2)
             self.make_alias_assert_error(

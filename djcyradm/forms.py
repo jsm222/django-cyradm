@@ -594,8 +594,9 @@ class MailUsersRecoveryEmailForm(ModelForm):
                   )
         messages.add_message(self.request,
                              WARNING,
-                             _('Please confirm your recovery email by following\
-                               instructions sent to your recovery email'))
+                             _('Please confirm your recovery email by'
+                               'following instructions sent to your'
+                               'recovery email'))
 
     def is_valid(self):
         if super(MailUsersRecoveryEmailForm, self).is_valid():

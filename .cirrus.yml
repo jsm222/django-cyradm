@@ -1,7 +1,20 @@
 container:
-  image:  python:slim
+  image: python
+  additional_containers:
+    - name: geckodriver
+      image: instrumentisto/geckodriver
+      port: 4444
+      cpu: 1.0
+      memory: 512Mi
 test_task:
-  test_script: 
+  test_script:
+  #- wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+  # - mkdir geckodriver
+  #- apt-get update
+  #- apt-get install -y firefox
+  #- tar -xzf geckodriver-v0.32.0-linux64.tar.gz -C geckodriver
+  #- export PATH=$PATH:$PWD/geckodriver
+
   - pip install .
   - pip install tox
   - tox
