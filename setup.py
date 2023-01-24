@@ -45,6 +45,6 @@ setup(
                       "django-simple-captcha==0.5.12",
                       "django-tables2==2.4.0",
                       "humanize==0.5.1",
-                      "rules==2.2"
+                      "rules==3.3"
                       ]
 )
