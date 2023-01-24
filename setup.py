@@ -35,7 +35,7 @@ setup(
     setup_requires=["wheel"],
     install_requires=["wheel",
                       "Babel==2.9.1",
-                      "Django==3.1.14",
+                      "Django==3.2",
                       "django-axes==5.2.2",
                       "django-bootstrap3==12.0.3",
                       "django-filter==22.1",
