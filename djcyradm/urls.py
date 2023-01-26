@@ -45,7 +45,8 @@ urlpatterns = [
         r"^mail-users/add/$",
         views.MailUserCreate.as_view(),
         name="mail-users-add"),
-    re_path(r"^confirm/$", views.ConfirmDisableOrDelete.as_view(), name="confirm"),
+    re_path(r"^confirm/$", views.ConfirmDisableOrDelete.as_view(),
+            name="confirm"),
     re_path(
         r"^mail-users/delete/confirm/$",
         views.AccountConfirmDelete.as_view(),
@@ -77,7 +78,8 @@ urlpatterns = [
         name="mail-forwarding",
     ),
     re_path(r"^domains/$", views.DomainsTableView.as_view(), name="domains"),
-    re_path(r"^domains/add/$", views.DomainsCreate.as_view(), name="domains-add"),
+    re_path(r"^domains/add/$", views.DomainsCreate.as_view(),
+            name="domains-add"),
     re_path(
         r"^domains/(?P<pk>[0-9]+)/$",
         views.DomainsUpdate.as_view(),

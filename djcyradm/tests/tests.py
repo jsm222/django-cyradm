@@ -87,9 +87,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
             raise e
         self.assertQuerysetEqual(VirtualDelivery.objects.filter(
             full_dest="myuser@example.com"),
-            map(repr, VirtualDelivery.objects.filter(
+            VirtualDelivery.objects.filter(
                 dest=MailUsers.objects.get(
-                    username="myuser@example.com"))),
+                    username="myuser@example.com")),
             ordered=False)
 
     def do_t_login(self):
@@ -97,7 +97,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         self.assertQuerysetEqual(
             MailUsers.objects.get(
                 username="cyrus").groups.all(),
-            map(repr, Group.objects.filter(name="admins").all()))
+            Group.objects.filter(name="admins").all())
         self.assertTrue(
             MailUsers.objects.get(
                 username="cyrus").has_perm("djcyradm.list_domains"))
@@ -193,9 +193,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
         self.assertQuerysetEqual(VirtualDelivery.objects.filter(
             full_dest="myuser@example.com"),
-            map(repr, VirtualDelivery.objects.filter(
+            VirtualDelivery.objects.filter(
                 dest=MailUsers.objects.get(
-                    username="myuser@example.com"))),
+                    username="myuser@example.com")),
             ordered=False)
 
     def make_alias(self, alias, alias_domain, dest):
