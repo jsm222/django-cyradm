@@ -34,7 +34,7 @@ setup(
     ],
     setup_requires=["wheel"],
     install_requires=["wheel",
-                      "Babel==2.9.1",
+                      "Babel>=2.9.1",
                       "Django>=4",
 		      "django-axes>=5.40.1",
                       "django-bootstrap3>=22.00",
@@ -44,7 +44,7 @@ setup(
                       "django-session-security==2.6.7",
                       "django-simple-captcha==0.5.17",
                       "django-tables2==2.5.1",
-                      "humanize==0.5.1",
+                      "humanize>=4.4.0",
                       "rules==3.3"
                       ]
 )
