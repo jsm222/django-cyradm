@@ -37,7 +37,7 @@ setup(
                       "Babel==2.9.1",
                       "Django>=4",
 		      "django-axes>=5.40.1",
-                      "django-bootstrap3==12.0.3",
+                      "django-bootstrap3==22.2",
                       "django-filter==22.1",
                       "django-ipware>=3",
                       "django-ranged-response==0.2.0",
