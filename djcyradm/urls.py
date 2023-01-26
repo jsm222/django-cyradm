@@ -1,119 +1,119 @@
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from djcyradm.views import locked_out
 
 from djcyradm import views
 
 urlpatterns = [
-    url(r"session_security/", include("session_security.urls")),
-    url(
+    re_path(r"session_security/", include("session_security.urls")),
+    re_path(
         r"^mail-users/$",
         views.MailUsersTableView.as_view(),
         name="mail-users"),
-    url(r"^login/?$", views.CustomLoginView.as_view(), name="login"),
-    url(r"^locked/$", locked_out, name="locked_out"),
-    url(r"^captcha/", include("captcha.urls")),
-    url(
+    re_path(r"^login/?$", views.CustomLoginView.as_view(), name="login"),
+    re_path(r"^locked/$", locked_out, name="locked_out"),
+    re_path(r"^captcha/", include("captcha.urls")),
+    re_path(
         r"^logout/$",
         views.CustomLogout.as_view(),
         name="logout"),
-    url(
+    re_path(
         r"^recover/$",
         views.RecoverPassword.as_view(),
         name="recover-password"),
-    url(
+    re_path(
         r"^recover/confirm-email/(?P<pk>[0-9]+)/(?P<token>\
         [0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
         views.RecoverEmailConfirm.as_view(),
         name="recover-confirm-email",
     ),
-    url(
+    re_path(
         r"^mailusers/(?P<pk>[0-9]+)/email/$",
         views.ChangeRecoveryEmail.as_view(),
         name="mail-users-recovery-email-change",
     ),
-    url(
+    re_path(
         r"^recover/(?P<pk>[0-9]+)/(?P<token>[0-9A-Za-z]{1,13}\
         -[0-9A-Za-z]{1,20})/$",
         views.RecoverAccountView.as_view(),
         name="recover_account",
     ),
-    url(
+    re_path(
         r"^recover/confirm/$",
         views.RecoverConfirm.as_view(),
         name="recover-confirm"),
-    url(
+    re_path(
         r"^mail-users/add/$",
         views.MailUserCreate.as_view(),
         name="mail-users-add"),
-    url(r"^confirm/$", views.ConfirmDisableOrDelete.as_view(), name="confirm"),
-    url(
+    re_path(r"^confirm/$", views.ConfirmDisableOrDelete.as_view(), name="confirm"),
+    re_path(
         r"^mail-users/delete/confirm/$",
         views.AccountConfirmDelete.as_view(),
         name="delete_confirm_accounts",
     ),
-    url(
+    re_path(
         r"^mail-users/(disable|enable)/confirm/$",
         views.AccountConfirmDisable.as_view(),
         name="disable_confirm_accounts",
     ),
-    url(
+    re_path(
         r"^mail-users/(?P<pk>[0-9]+)/$",
         views.MailUserUpdate.as_view(),
         name="mail-users-update",
     ),
-    url(
+    re_path(
         r"^mail-users/(?P<pk>[0-9]+)/password/$",
         views.MailUserUpdatePassword.as_view(),
         name="mail-users-password-change",
     ),
-    url(
+    re_path(
         r"^mail-users/(?P<pk>[0-9]+)/password/reset/$",
         views.MailUserResetPassword.as_view(),
         name="mail-users-password-reset",
     ),
-    url(
+    re_path(
         r"^mail-users/(?P<pk>[0-9]+)/forwarding/$",
         views.VirtualDeliveryMailForward.as_view(),
         name="mail-forwarding",
     ),
-    url(r"^domains/$", views.DomainsTableView.as_view(), name="domains"),
-    url(r"^domains/add/$", views.DomainsCreate.as_view(), name="domains-add"),
-    url(
+    re_path(r"^domains/$", views.DomainsTableView.as_view(), name="domains"),
+    re_path(r"^domains/add/$", views.DomainsCreate.as_view(), name="domains-add"),
+    re_path(
         r"^domains/(?P<pk>[0-9]+)/$",
         views.DomainsUpdate.as_view(),
         name="domains-update",
     ),
-    url(
+    re_path(
         r"^domains/delete/confirm/$",
         views.DomainConfirmDelete.as_view(),
         name="delete_confirm_domains",
     ),
-    url(
+    re_path(
         r"^aliases/$",
         views.VirtualDeliveryTableView.as_view(),
         name="aliases"
     ),
-    url(
+    re_path(
         r"^aliases/add/$",
         views.VirtualDeliveryCreate.as_view(),
         name="aliases-add"
     ),
-    url(
+    re_path(
         r"^aliases/add/external/$",
         views.VirtualDeliveryExternalCreate.as_view(),
         name="aliases-add-external",
     ),
-    url(
+    re_path(
         r"^aliases/(?P<pk>[0-9]+)/$",
         views.VirtualDeliveryUpdate.as_view(),
         name="aliases-update",
     ),
-    url(
+    re_path(
         r"^aliases/delete/confirm/$",
         views.VirtualDeliveryConfirmDelete.as_view(),
         name="delete_confirm_aliases",
     ),
-    url(
+    re_path(
         r"^aliases/(disable|enable)/confirm/$",
         views.VirtualDeliveryConfirmDisable.as_view(),
         name="disable_confirm_aliases",

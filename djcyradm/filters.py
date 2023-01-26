@@ -1,6 +1,6 @@
 from django.db.models import Q
 import django_filters
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from djcyradm.models import MailUsers, Domains, VirtualDelivery
 from django.contrib.auth.models import Group
 

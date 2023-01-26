@@ -14,7 +14,7 @@ from django.dispatch import receiver
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.utils.translation import ngettext_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django_tables2 import SingleTableView

@@ -1,7 +1,7 @@
 import locale
 
 import django_tables2 as tables
-from django.utils.translation import ugettext_lazy as _,\
+from django.utils.translation import gettext_lazy as _,\
     get_language, to_locale
 from django_tables2.utils import A
 from humanize import naturalsize

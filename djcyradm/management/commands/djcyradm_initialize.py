@@ -12,7 +12,7 @@ from djcyradm.models import MailUsers, Domains
 class Command(BaseCommand):
     help = "Initializes your cyrus admin user"
     help = help+" from DJCYRADM_IMAP settings in settings.py"
-    requires_system_checks = False
+    requires_system_checks = []
 
     def add_arguments(self, parser):
         parser.add_argument(
