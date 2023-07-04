@@ -42,7 +42,7 @@ setup(
                       "django-ipware>=3",
                       "django-ranged-response==0.2.0",
                       "django-session-security==2.6.7",
-                      "django-simple-captcha==0.5.17",
+                      "django-simple-captcha==0.5.18",
                       "django-tables2==2.5.3",
                       "humanize>=4.4.0",
                       "rules==3.3"
