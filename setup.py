@@ -38,7 +38,7 @@ setup(
                       "Django>=4",
 		      "django-axes>=5.40.1",
                       "django-bootstrap3>=22.00",
-                      "django-filter==23.2",
+                      "django-filter==23.3",
                       "django-ipware>=3",
                       "django-ranged-response==0.2.0",
                       "django-session-security==2.6.7",
